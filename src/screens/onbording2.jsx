@@ -1,7 +1,6 @@
-import { StyleSheet } from 'react-native';
-import React from 'react';
-import OnBordingComponents from '../components/onbording-components';
 import { useNavigation } from '@react-navigation/native';
+import { StyleSheet } from 'react-native';
+import OnBordingComponents from '../components/onbording-components';
 
 const OnBording2 = () => {
   const navigation = useNavigation();
@@ -25,7 +24,7 @@ const OnBording2 = () => {
           routes: [{ name: 'Login' }],
         });
       }}
-      activebox2={{ backgroundColor: '#54408C', borderRadius: 10, padding: 10 }}
+      activebox2={{ backgroundColor: '#54408C', borderRadius: 10, padding: 5 }}
     />
   );
 };

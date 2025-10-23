@@ -2,14 +2,29 @@ import React, { useState } from 'react';
 import { Dimensions, Text, View, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import CustomButton from './button';
-import TopBar from './topBar';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import CustomTextInput from './custom-text-input';
+import TopBar from '../components/topBar';
+import CustomButton from '../components/button';
+import CustomTextInput from '../components/custom-text-input';
 
-const PhoneNumberVerification = ({ header, subHeader }) => {
+const PhoneNumberVerification = () => {
   const navigation = useNavigation();
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+
+  const handleContinue = () => {
+    if (!phoneNumber.trim()) {
+      setPhoneError('Phone number is required');
+      return;
+    } else if (!/^[0-9]{10,15}$/.test(phoneNumber)) {
+      setPhoneError('Enter a valid phone number (10–15 digits)');
+      return;
+    } else {
+      setPhoneError('');
+      navigation.navigate('OtpVerification');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <TopBar onPress={() => navigation.goBack()} />
@@ -18,11 +33,9 @@ const PhoneNumberVerification = ({ header, subHeader }) => {
         <KeyboardAvoidingView
           behavior={'padding'}
           keyboardVerticalOffset={100}
-          style={{
-            flex: 1,
-          }}
+          style={{ flex: 1 }}
         >
-          <Text style={styles.heading}>{header}</Text>
+          <Text style={styles.heading}>Phone Number</Text>
           <View style={{ alignItems: 'center' }}>
             <Text
               style={[
@@ -30,7 +43,8 @@ const PhoneNumberVerification = ({ header, subHeader }) => {
                 { paddingBottom: 30, width: '70%', textAlign: 'center' },
               ]}
             >
-              {subHeader}
+              Please enter your phone number, so we can more easily deliver your
+              order
             </Text>
           </View>
 
@@ -39,17 +53,16 @@ const PhoneNumberVerification = ({ header, subHeader }) => {
             placeholder='Your Phone Number'
             value={phoneNumber}
             onChangeText={setPhoneNumber}
+            keyboardType='phone-pad'
+            error={phoneError}
           />
+
           <View style={{ justifyContent: 'flex-end', flex: 1 }}>
             <CustomButton
               style={styles.button}
               title='Continue'
               textStyle={styles.buttonText}
-              onPress={() => {
-                navigation.navigate('OtpVerification', {
-                  verficationdata: phoneNumber,
-                });
-              }}
+              onPress={handleContinue}
             />
           </View>
         </KeyboardAvoidingView>

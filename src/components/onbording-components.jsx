@@ -100,7 +100,7 @@ const OnBordingComponents = ({
                   {
                     backgroundColor: '#E8E8E8',
                     borderRadius: 10,
-                    padding: 10,
+                    padding: 5,
                     marginLeft: 10,
                   },
                   activebox1,
@@ -111,7 +111,7 @@ const OnBordingComponents = ({
                   {
                     backgroundColor: '#E8E8E8',
                     borderRadius: 10,
-                    padding: 10,
+                    padding: 5,
                     marginLeft: 10,
                   },
                   activebox2,
@@ -122,7 +122,7 @@ const OnBordingComponents = ({
                   {
                     backgroundColor: '#E8E8E8',
                     borderRadius: 10,
-                    padding: 10,
+                    padding: 5,
                     marginLeft: 10,
                   },
                   activebox3,

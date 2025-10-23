@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
 import {
-  Animated,
   Image,
-  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,12 +12,37 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Bar from '../components/bar';
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
-import { useNavigation } from '@react-navigation/native';
 
 const Login = () => {
   const navigation = useNavigation();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const handleLogin = () => {
+    let valid = true;
+
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      valid = false;
+    } else {
+      setEmailError('');
+    }
+
+    if (!password.trim()) {
+      setPasswordError('Password is required');
+      valid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (valid) {
+      navigation.navigate('OtpVerificationOptionForgotpassword');
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
@@ -43,16 +67,24 @@ const Login = () => {
           placeholder='Your email'
           value={email}
           onChangeText={setEmail}
+          error={emailError}
         />
+
         <CustomTextInput
           label='Password'
           placeholder='Your password'
           secureTextEntry={true}
           value={password}
           onChangeText={setPassword}
+          showEyeIcon={true}
+          error={passwordError}
         />
 
-        <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('OtpVerificationOptionForgotpassword')
+          }
+        >
           <Text
             style={{
               color: '#54408C',
@@ -69,7 +101,9 @@ const Login = () => {
           style={{ padding: 20, fontWeight: 'bold', borderRadius: 60 }}
           title='Login'
           textStyle={{ fontWeight: 'bold' }}
+          onPress={handleLogin}
         />
+
         <View
           style={{
             flexDirection: 'row',
@@ -77,12 +111,8 @@ const Login = () => {
             justifyContent: 'center',
           }}
         >
-          <Text style={{ color: '#A5A5A5' }}>Don't have a account?</Text>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Signup');
-            }}
-          >
+          <Text style={{ color: '#A5A5A5' }}>Don't have an account?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
             <Text
               style={{
                 color: '#54408C',
@@ -99,57 +129,21 @@ const Login = () => {
 
         <Bar />
 
-        <TouchableOpacity
-          style={{
-            padding: 20,
-            fontWeight: 'bold',
-            backgroundColor: 'white',
-            borderWidth: 1,
-            borderRadius: 60,
-            marginBottom: 20,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+        <TouchableOpacity style={styles.socialButton}>
           <Image
             source={require('../../assets/google.png')}
-            style={{
-              width: 20,
-              height: 20,
-              alignSelf: 'center',
-              resizeMode: 'contain',
-            }}
+            style={styles.socialIcon}
           />
           <Text style={{ paddingLeft: 10 }}>Sign in with Google</Text>
         </TouchableOpacity>
 
-        <View style={{ paddingBottom: 40 }}>
-          <TouchableOpacity
-            style={{
-              padding: 20,
-              fontWeight: 'bold',
-              backgroundColor: 'white',
-              borderWidth: 1,
-              borderRadius: 60,
-              marginBottom: 20,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Image
-              source={require('../../assets/apple.png')}
-              style={{
-                width: 20,
-                height: 20,
-                alignSelf: 'center',
-                resizeMode: 'contain',
-              }}
-            />
-            <Text style={{ paddingLeft: 10 }}>Sign in with Apple</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={[styles.socialButton, { marginBottom: 40 }]}>
+          <Image
+            source={require('../../assets/apple.png')}
+            style={styles.socialIcon}
+          />
+          <Text style={{ paddingLeft: 10 }}>Sign in with Apple</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -157,4 +151,22 @@ const Login = () => {
 
 export default Login;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  socialButton: {
+    padding: 20,
+    fontWeight: 'bold',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderRadius: 60,
+    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  socialIcon: {
+    width: 20,
+    height: 20,
+    alignSelf: 'center',
+    resizeMode: 'contain',
+  },
+});

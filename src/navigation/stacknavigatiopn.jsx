@@ -1,19 +1,20 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StyleSheet } from 'react-native';
+import Login from '../screens/login';
 import OnBording1 from '../screens/onbording';
 import OnBording2 from '../screens/onbording2';
 import OnBording3 from '../screens/onbording3';
-import Login from '../screens/login';
 import Signup from '../screens/signup';
+import OtpVerificationOption from '../screens/verification-options';
 
-import OtpVerification from '../components/otp-verfication';
-import PhoneNumberVerification from '../components/phone-number-verification';
-
-import SuccessVerifcation from '../screens/success-verifcation';
-import VerificationOption from '../screens/verification-option';
-import ForgotPassword from '../screens/forgot-password';
+import OtpVerificationOptionForgotpassword from '../screens/verification-options-forgot-password';
+import OtpVerification from '../screens/otp-verfication';
+import PhoneNumberVerification from '../screens/phone-number-verification';
+import SuccessVerification from '../screens/success-verification';
+import ResetPassword from '../screens/reset-password';
+import Home from '../screens/home';
+import SuccessVerificationPasswordChange from '../screens/success-verifiication-password-change';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -25,20 +26,29 @@ const StackNavigation = () => {
         <Stack.Screen name='OnBording3' component={OnBording3} />
         <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name='Signup' component={Signup} />
+        <Stack.Screen name='Home' component={Home} />
         <Stack.Screen
-          name='SuccessVerifcation'
-          component={SuccessVerifcation}
+          name='OtpVerificationOption'
+          component={OtpVerificationOption}
         />
         <Stack.Screen
-          name='VerificationOption'
-          component={VerificationOption}
+          name='OtpVerificationOptionForgotpassword'
+          component={OtpVerificationOptionForgotpassword}
         />
         <Stack.Screen name='OtpVerification' component={OtpVerification} />
         <Stack.Screen
-          name='ForgotVerification'
-          component={ForgotVerification}
+          name='PhoneNumberVerification'
+          component={PhoneNumberVerification}
         />
-        <Stack.Screen name='ForgotPassword' component={ForgotPassword} />
+        <Stack.Screen
+          name='SuccessVerification'
+          component={SuccessVerification}
+        />
+        <Stack.Screen name='ResetPassword' component={ResetPassword} />
+        <Stack.Screen
+          name='SuccessVerificationPasswordChange'
+          component={SuccessVerificationPasswordChange}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

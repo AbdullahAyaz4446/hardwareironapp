@@ -4,7 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from './button';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
-const SuccessVerificationComponent = ({ header, subheader }) => {
+const SuccessVerificationComponent = ({
+  header,
+  subheader,
+  onPress,
+  butttonTitle,
+}) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       <ScrollView
@@ -57,8 +62,9 @@ const SuccessVerificationComponent = ({ header, subheader }) => {
 
           <CustomButton
             style={{ padding: 20, fontWeight: 'bold', borderRadius: 60 }}
-            title='Get Started'
+            title={butttonTitle}
             textStyle={{ fontWeight: 'bold' }}
+            onPress={onPress}
           />
         </KeyboardAvoidingView>
       </ScrollView>

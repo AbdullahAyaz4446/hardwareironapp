@@ -9,12 +9,16 @@ import {
 } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomButton from './button';
-import TopBar from './topBar';
+
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import TopBar from '../components/topBar';
+import CustomButton from '../components/button';
+import { useSelector } from 'react-redux';
 
 const OtpVerification = () => {
   const navigation = useNavigation();
+  const flag = useSelector((state) => state.flag.flag);
+  console.log(flag);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -29,9 +33,9 @@ const OtpVerification = () => {
         >
           <Text style={styles.heading}>Verification</Text>
           <Text style={[styles.subHeading, { paddingBottom: 4 }]}>
-            Please enter the code we just sent
+            Please enter the code
           </Text>
-          <Text style={{ textAlign: 'center' }}>hello</Text>
+
           <OtpInput
             numberOfDigits={4}
             focusColor='green'
@@ -89,7 +93,16 @@ const OtpVerification = () => {
               style={styles.button}
               title='Continue'
               textStyle={styles.buttonText}
-              onPress={() => navigation.navigate('SuccessVerifcation')}
+              onPress={() => {
+                if (flag) {
+                  navigation.navigate('ResetPassword');
+                } else {
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'SuccessVerification' }],
+                  });
+                }
+              }}
             />
           </View>
         </KeyboardAvoidingView>

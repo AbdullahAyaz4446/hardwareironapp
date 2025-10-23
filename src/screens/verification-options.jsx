@@ -7,16 +7,18 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import CustomButton from './button';
-import TopBar from './topBar';
+
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import CustomButton from '../components/button';
+import TopBar from '../components/topBar';
+import { useDispatch } from 'react-redux';
 
-const OtpVerificationOptionComponent = ({ header, subHeader }) => {
+const OtpVerificationOption = () => {
   const navigation = useNavigation();
-
   const [selectedOption, setSelectedOption] = useState(null);
+  const dispatch = useDispatch();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -29,8 +31,10 @@ const OtpVerificationOptionComponent = ({ header, subHeader }) => {
             flex: 1,
           }}
         >
-          <Text style={styles.heading}>{header}</Text>
-          <Text style={styles.subHeading}>{subHeader}</Text>
+          <Text style={styles.heading}>Verification</Text>
+          <Text style={styles.subHeading}>
+            Select which contact details should we use to verify your account
+          </Text>
 
           <View style={styles.optionRow}>
             <TouchableOpacity
@@ -82,9 +86,13 @@ const OtpVerificationOptionComponent = ({ header, subHeader }) => {
               disable={selectedOption === null}
               onPress={() => {
                 if (selectedOption == 'email') {
-                  navigation.navigate('OtpVerification');
+                  navigation.navigate('OtpVerification', {
+                    flag: false,
+                  });
                 } else {
-                  navigation.navigate('phonenumberverification');
+                  navigation.navigate('PhoneNumberVerification', {
+                    flag: false,
+                  });
                 }
               }}
             />
@@ -95,7 +103,7 @@ const OtpVerificationOptionComponent = ({ header, subHeader }) => {
   );
 };
 
-export default OtpVerificationOptionComponent;
+export default OtpVerificationOption;
 
 const styles = StyleSheet.create({
   safeArea: {
