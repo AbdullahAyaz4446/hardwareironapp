@@ -15,6 +15,7 @@ import SuccessVerification from '../screens/success-verification';
 import ResetPassword from '../screens/reset-password';
 import Home from '../screens/home';
 import SuccessVerificationPasswordChange from '../screens/success-verifiication-password-change';
+import TabNavigatiopn from './tabnavigatiopn';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -26,7 +27,7 @@ const StackNavigation = () => {
         <Stack.Screen name='OnBording3' component={OnBording3} />
         <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name='Signup' component={Signup} />
-        <Stack.Screen name='Home' component={Home} />
+        <Stack.Screen name='Tab' component={TabNavigatiopn} />
         <Stack.Screen
           name='OtpVerificationOption'
           component={OtpVerificationOption}

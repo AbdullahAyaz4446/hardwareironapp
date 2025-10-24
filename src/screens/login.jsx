@@ -40,7 +40,7 @@ const Login = () => {
     }
 
     if (valid) {
-      navigation.navigate('OtpVerificationOptionForgotpassword');
+      navigation.navigate('Tab');
     }
   };
 
