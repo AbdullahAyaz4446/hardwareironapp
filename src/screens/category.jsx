@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
 import {
   Dimensions,
+  FlatList,
+  Image,
   ScrollView,
   StyleSheet,
-  View,
-  TouchableOpacity,
   Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
   Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomTextInput from '../components/custom-text-input';
+import { FlashList } from '@shopify/flash-list';
 
 const { width } = Dimensions.get('window');
 
@@ -29,10 +32,75 @@ const tags = [
   { id: 6, tag: 'Angry' },
 ];
 
+const initialImages = [
+  {
+    id: '1',
+    image: require('../../assets/slider1.png'),
+    title: 'The Kite Runner',
+    price: '$14.99',
+  },
+  {
+    id: '2',
+    image: require('../../assets/slider1.png'),
+    title: 'Atomic Habits',
+    price: '$12.49',
+  },
+  {
+    id: '3',
+    image: require('../../assets/slider1.png'),
+    title: 'Rich Dad Poor Dad',
+    price: '$9.99',
+  },
+  {
+    id: '4',
+    image: require('../../assets/slider1.png'),
+    title: 'Ikigai',
+    price: '$10.99',
+  },
+  {
+    id: '5',
+    image: require('../../assets/slider1.png'),
+    title: 'Ikigai',
+    price: '$10.99',
+  },
+  {
+    id: '6',
+    image: require('../../assets/slider1.png'),
+    title: 'Ikigai',
+    price: '$10.99',
+  },
+  {
+    id: '7',
+    image: require('../../assets/slider1.png'),
+    title: 'Ikigai',
+    price: '$10.99',
+  },
+  {
+    id: '8',
+    image: require('../../assets/slider1.png'),
+    title: 'Ikigai',
+    price: '$10.99',
+  },
+  {
+    id: '9',
+    image: require('../../assets/slider1.png'),
+    title: 'Ikigai',
+    price: '$10.99',
+  },
+  {
+    id: '10',
+    image: require('../../assets/slider1.png'),
+    title: 'Ikigai last',
+    price: '$10.99',
+  },
+];
+
 const Category = () => {
   const navigation = useNavigation();
   const searchHeight = useSharedValue(0);
   const [selectedTag, setSelectedTag] = useState('All');
+  const [refreshing, setRefreshing] = useState(false);
+  const [popularImages, setPopularImages] = useState(initialImages);
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: withTiming(searchHeight.value, {
@@ -51,76 +119,92 @@ const Category = () => {
 
   const handleTagPress = (tag) => {
     setSelectedTag(tag);
-    console.log('Tag pressed:', tag);
   };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  };
+
+  const showList = ({ item }) => (
+    <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('Products');
+        }}
+        style={{ width: '90%', margin: 10 }}
+      >
+        <Image source={item.image} style={styles.bookImage} />
+        <Text style={styles.bookTitle}>{item.title}</Text>
+        <Text style={styles.bookPrice}>{item.price}</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          backgroundColor: '#FFFFFF',
-          paddingVertical: 20,
-        }}
-        showsVerticalScrollIndicator={false}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name='arrow-back' size={25} color='black' />
+        </TouchableOpacity>
+
+        <Text style={styles.title}>Category</Text>
+
+        <TouchableOpacity onPress={toggleSearch}>
+          <Ionicons name='search' size={25} color='black' />
+        </TouchableOpacity>
+      </View>
+
+      <Animated.View
+        style={[
+          {
+            overflow: 'hidden',
+            paddingHorizontal: 20,
+            marginBottom: 20,
+          },
+          animatedStyle,
+        ]}
       >
-        <View style={styles.header}>
-          <TouchableOpacity onPress={toggleSearch}>
-            <Ionicons name='search' size={25} color='black' />
-          </TouchableOpacity>
+        <CustomTextInput placeholder='Search...' />
+      </Animated.View>
 
-          <Text style={styles.title}>Category</Text>
-
-          <TouchableOpacity>
-            <View style={{ position: 'relative' }}>
-              <Ionicons name='notifications-outline' size={25} color='black' />
-              <View style={styles.redDot} />
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <Animated.View
-          style={[
-            {
-              overflow: 'hidden',
-              paddingHorizontal: 20,
-              marginBottom: 20,
-            },
-            animatedStyle,
-          ]}
-        >
-          <CustomTextInput placeholder='Search...' />
-        </Animated.View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.tagsContainer}
-        >
-          {tags.map((item, index) => {
-            const isSelected = selectedTag === item.tag;
-            return (
-              <TouchableOpacity
-                key={item.id}
-                style={[styles.tag]}
-                onPress={() => handleTagPress(item.tag)}
+      <FlashList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        estimatedItemSize={80}
+        data={tags}
+        contentContainerStyle={{
+          height: 50,
+          alignItems: 'center',
+          paddingHorizontal: 10,
+        }}
+        renderItem={({ item }) => {
+          const isSelected = selectedTag === item.tag;
+          return (
+            <TouchableOpacity
+              style={{
+                paddingHorizontal: 15,
+              }}
+              onPress={() => handleTagPress(item.tag)}
+            >
+              <Text
+                style={{
+                  paddingVertical: 10,
+                  fontSize: 16,
+                  color: isSelected ? 'black' : 'gray',
+                  fontWeight: isSelected ? 'bold' : '500',
+                }}
               >
-                <Text
-                  style={[
-                    styles.tagText,
-                    {
-                      color: isSelected ? 'black' : 'gray',
-                      fontWeight: isSelected ? 'bold' : '500',
-                    },
-                  ]}
-                >
-                  {item.tag}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </ScrollView>
+                {item.tag}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+
+      <FlashList data={popularImages} numColumns={2} renderItem={showList} />
     </SafeAreaView>
   );
 };
@@ -133,34 +217,28 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    padding: 20,
   },
   title: {
     fontWeight: 'bold',
     fontSize: 20,
   },
-  redDot: {
-    position: 'absolute',
-    right: 2,
-    top: 2,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'red',
+  bookImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: 10,
+    resizeMode: 'cover',
+    padding: 2,
   },
-  tagsContainer: {
-    paddingVertical: 0,
-    paddingHorizontal: 10,
+  bookTitle: {
+    marginTop: 10,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#000',
   },
-  tag: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    marginRight: 2,
-    marginBottom: 10,
-  },
-  tagText: {
-    fontSize: 18,
-    fontWeight: '500',
+  bookPrice: {
+    color: '#54408C',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

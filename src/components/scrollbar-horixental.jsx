@@ -29,7 +29,7 @@ const ScrollViewHorizontal = ({
         <TouchableOpacity
           key={item.id}
           style={[styles.card, index === 0 && { marginLeft: 20 }]}
-          onPress={onPress}
+          onPress={() => onPress?.(item)}
         >
           <Image
             source={item.image}

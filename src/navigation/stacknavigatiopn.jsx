@@ -13,9 +13,17 @@ import OtpVerification from '../screens/otp-verfication';
 import PhoneNumberVerification from '../screens/phone-number-verification';
 import SuccessVerification from '../screens/success-verification';
 import ResetPassword from '../screens/reset-password';
-import Home from '../screens/home';
+
 import SuccessVerificationPasswordChange from '../screens/success-verifiication-password-change';
 import TabNavigatiopn from './tabnavigatiopn';
+import MyAccount from '../screens/my-account';
+
+import Category from '../screens/category';
+import ConformationOrder from '../screens/conformation-order';
+import Location from '../screens/location';
+import Products from '../screens/products';
+import LocationDetailes from '../screens/locationDeatiles';
+import Favorites from '../screens/favorites';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -50,6 +58,13 @@ const StackNavigation = () => {
           name='SuccessVerificationPasswordChange'
           component={SuccessVerificationPasswordChange}
         />
+        <Stack.Screen name='MyAccount' component={MyAccount} />
+        <Stack.Screen name='Category' component={Category} />
+        <Stack.Screen name='ConformationOrder' component={ConformationOrder} />
+        <Stack.Screen name='Location' component={Location} />
+        <Stack.Screen name='Products' component={Products} />
+        <Stack.Screen name='LocationDetailes' component={LocationDetailes} />
+        <Stack.Screen name='Favorites' component={Favorites} />
       </Stack.Navigator>
     </NavigationContainer>
   );

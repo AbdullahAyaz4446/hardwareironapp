@@ -1,111 +1,81 @@
-import React, { useRef, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import React, { useRef, useState } from 'react';
 import {
-  ScrollView,
+  Image,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
   Dimensions,
-  Image,
-  TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import Carousel, { Pagination } from 'react-native-reanimated-carousel';
-import ActionSheet from 'react-native-actions-sheet';
-import CustomButton from '../components/button';
-import ScrollViewHorizontal from '../components/scrollbar-horixental';
-import CustomTextInput from '../components/custom-text-input';
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
+import { FlashList } from '@shopify/flash-list';
+import ActionSheet from 'react-native-actions-sheet';
+import CustomTextInput from '../components/custom-text-input';
+import CustomButton from '../components/button';
 
-const { width, height } = Dimensions.get('window');
-
-const data = [
-  { id: 1, image: require('../../assets/slider1.png') },
-  { id: 2, image: require('../../assets/slider2.png') },
-  { id: 3, image: require('../../assets/slider3.png') },
+const tags = [
+  { id: 1, tag: 'All' },
+  { id: 2, tag: 'Novels' },
+  { id: 3, tag: 'Self Love' },
+  { id: 4, tag: 'Science' },
+  { id: 5, tag: 'Romantic' },
+  { id: 6, tag: 'Angry' },
 ];
 
-const popularImages = [
+const initialImages = [
   {
-    id: 1,
+    id: '1',
     image: require('../../assets/slider1.png'),
     title: 'The Kite Runner',
-    price: '$14.99',
+    description:
+      'A heartbreaking story of friendship and redemption set in Afghanistan.',
   },
   {
-    id: 2,
+    id: '2',
     image: require('../../assets/slider1.png'),
     title: 'Atomic Habits',
-    price: '$12.49',
+    description:
+      'A guide to building good habits and breaking bad ones through small changes.',
   },
   {
-    id: 3,
+    id: '3',
     image: require('../../assets/slider1.png'),
     title: 'Rich Dad Poor Dad',
-    price: '$9.99',
+    description:
+      'Lessons on financial independence and mindset from two contrasting father figures.',
   },
   {
-    id: 4,
+    id: '4',
     image: require('../../assets/slider1.png'),
     title: 'Ikigai',
-    price: '$10.99',
+    description:
+      'The Japanese secret to a long and happy life through purpose and balance.',
   },
 ];
 
-const popularBrands = [
-  {
-    id: 1,
-    image: require('../../assets/slider1.png'),
-    title: 'Abdullah Ayaz',
-    price: 'Coder',
-  },
-  {
-    id: 2,
-    image: require('../../assets/slider1.png'),
-    title: 'Zaki',
-    price: 'Coder',
-  },
-  {
-    id: 3,
-    image: require('../../assets/slider1.png'),
-    title: 'Misbha',
-    price: 'Backend',
-  },
-  {
-    id: 4,
-    image: require('../../assets/slider1.png'),
-    title: 'Ammmar',
-    price: 'Graphic Designer',
-  },
-];
-
-const Home = () => {
+const Products = () => {
   const navigation = useNavigation();
   const actionSheetRef = useRef(null);
-  const ref = useRef(null);
-  const progress = useSharedValue(0);
-  const searchHeight = useSharedValue(0);
+
+  const [selectedTag, setSelectedTag] = useState('All');
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [lastPressed, setLastPressed] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const increment = () => {
-    setQuantity(quantity + 1);
-    setLastPressed('increment');
-  };
+  const searchHeight = useSharedValue(0);
 
-  const decrement = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-      setLastPressed('decrement');
-    }
+  const handleTagPress = (tag) => {
+    setSelectedTag(tag);
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -119,150 +89,105 @@ const Home = () => {
     }),
   }));
 
-  const openModal = (item) => {
-    console.log(item);
-    setSelectedProduct(item);
-    setQuantity(1);
-    setIsFavorite(false);
-    actionSheetRef.current?.setModalVisible(true);
-  };
-
-  const onPressPagination = (index) => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollTo({ count: index, animated: true });
-    }
-  };
   const toggleSearch = () => {
     searchHeight.value = searchHeight.value === 0 ? 60 : 0;
   };
 
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingVertical: 20 }}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={toggleSearch}>
-            <Ionicons name='search' size={25} color='black' />
-          </TouchableOpacity>
-          <Text style={styles.title}>Home</Text>
-          <TouchableOpacity>
-            <View style={{ position: 'relative' }}>
-              {/* <Ionicons name='notifications-outline' size={25} color='black' />
-              <View style={styles.redDot} /> */}
-            </View>
-          </TouchableOpacity>
-        </View>
+  const increment = () => {
+    setLastPressed('increment');
+    setQuantity((prev) => prev + 1);
+  };
 
-        <Animated.View
-          style={[
-            {
-              overflow: 'hidden',
-              paddingHorizontal: 20,
-              marginBottom: 20,
-            },
-            animatedStyle,
-          ]}
-        >
-          <CustomTextInput placeholder='Search...' />
-        </Animated.View>
+  const decrement = () => {
+    if (quantity > 1) {
+      setLastPressed('decrement');
+      setQuantity((prev) => prev - 1);
+    }
+  };
 
-        <Carousel
-          ref={ref}
-          width={width}
-          height={width / 2}
-          data={data}
-          onProgressChange={progress}
-          mode='parallax'
-          modeConfig={{
-            parallaxScrollingScale: 0.9,
-            parallaxScrollingOffset: 50,
-            parallaxAdjacentItemScale: 0.8,
-          }}
-          renderItem={({ item }) => (
-            <View style={styles.slide}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                  Special Offer
-                </Text>
-                <Text style={{ textAlign: 'left', paddingBottom: 10 }}>
-                  Discount 25%
-                </Text>
-                <CustomButton
-                  style={{ width: '50%', padding: 10, borderRadius: 20 }}
-                  title='Order Now'
-                />
-              </View>
-              <Image source={item.image} style={styles.image} />
-            </View>
-          )}
-        />
+  const openProductDetails = (product) => {
+    setSelectedProduct(product);
+    setIsFavorite(false);
+    setQuantity(1);
+    actionSheetRef.current?.show();
+  };
 
-        <Pagination.Basic
-          progress={progress}
-          data={data}
-          dotStyle={{
-            backgroundColor: 'rgba(0,0,0,0.2)',
-            borderRadius: 50,
-            width: 8,
-            height: 8,
-          }}
-          containerStyle={{
-            gap: 5,
-            marginTop: 10,
-            alignSelf: 'center',
-          }}
-          onPress={onPressPagination}
-        />
-
+  const renderTag = ({ item }) => {
+    const isSelected = selectedTag === item.tag;
+    return (
+      <TouchableOpacity
+        style={{ paddingHorizontal: 20 }}
+        onPress={() => handleTagPress(item.tag)}
+      >
         <Text
           style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginTop: 20,
-            paddingHorizontal: 20,
+            paddingVertical: 10,
+            fontSize: 16,
+            color: isSelected ? 'black' : 'gray',
+            fontWeight: isSelected ? 'bold' : '500',
           }}
         >
-          Top 5 products of Week
+          {item.tag}
         </Text>
+      </TouchableOpacity>
+    );
+  };
 
-        <ScrollViewHorizontal
-          data={popularImages}
-          containerStyle={{ marginTop: 10 }}
-          imageStyle={{ borderRadius: 15 }}
-          titleStyle={{ color: 'black', fontWeight: 'bold' }}
-          priceStyle={{ color: '#54408C', fontSize: 12, fontWeight: 'bold' }}
-          onPress={(item) => openModal(item)}
-        />
+  const renderProduct = ({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => openProductDetails(item)}
+    >
+      <Image source={item.image} style={styles.bookImage} />
+      <View style={{ marginLeft: 15, flex: 1 }}>
+        <Text style={styles.bookTitle}>{item.title}</Text>
+        <Text style={styles.bookDescription}>{item.description}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 20,
-            paddingTop: 20,
-          }}
-        >
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Category</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Category')}>
-            <Text
-              style={{ fontSize: 18, fontWeight: 'bold', color: '#54408C' }}
-            >
-              See all
-            </Text>
-          </TouchableOpacity>
-        </View>
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name='arrow-back' size={25} color='black' />
+        </TouchableOpacity>
+        <Text style={styles.title}>Products</Text>
+        <TouchableOpacity onPress={toggleSearch}>
+          <Ionicons name='search' size={25} color='black' />
+        </TouchableOpacity>
+      </View>
 
-        <ScrollViewHorizontal
-          data={popularBrands}
-          containerStyle={{ marginTop: 10 }}
-          imageStyle={{
-            width: width / 3,
-            height: width / 3,
-            borderRadius: 100,
-          }}
-          titleStyle={{ color: 'black', fontWeight: 'bold' }}
-          priceStyle={{ color: '#A6A6A6', fontSize: 12, fontWeight: 'bold' }}
-        />
-      </ScrollView>
+      <Animated.View
+        style={[
+          { overflow: 'hidden', paddingHorizontal: 20, marginBottom: 10 },
+          animatedStyle,
+        ]}
+      >
+        <CustomTextInput placeholder='Search...' />
+      </Animated.View>
+
+      <FlashList
+        horizontal
+        data={tags}
+        renderItem={renderTag}
+        keyExtractor={(item) => item.id.toString()}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          alignItems: 'center',
+          paddingHorizontal: 10,
+        }}
+      />
+
+      <FlashList
+        data={initialImages}
+        renderItem={renderProduct}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        estimatedItemSize={80}
+        contentContainerStyle={{ padding: 20 }}
+      />
+
       <ActionSheet
         ref={actionSheetRef}
         gestureEnabled
@@ -434,7 +359,7 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Products;
 
 const styles = StyleSheet.create({
   header: {
@@ -442,31 +367,33 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    padding: 20,
   },
-  title: { fontWeight: 'bold', fontSize: 20 },
-  redDot: {
-    position: 'absolute',
-    right: 2,
-    top: 2,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'red',
+  title: {
+    fontWeight: 'bold',
+    fontSize: 20,
   },
-  slide: {
-    flex: 1,
+  card: {
+    borderRadius: 15,
+    paddingVertical: 10,
+    marginBottom: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#E5E5E5',
-    paddingLeft: 30,
-    borderRadius: 20,
   },
-  image: {
-    width: width / 2.2,
-    height: '100%',
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
+  bookImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 40,
+    resizeMode: 'cover',
+  },
+  bookTitle: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#000',
+  },
+  bookDescription: {
+    marginTop: 5,
+    color: '#555',
+    fontSize: 14,
   },
 });
