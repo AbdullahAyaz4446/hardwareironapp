@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '../components/button';
 
@@ -22,20 +21,20 @@ const LocationScreen = () => {
   const actionSheetRef = useRef(null);
   const [selectedAddress, setSelectedAddress] = useState('Home');
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Please allow location access.');
-        setLoading(false);
-        return;
-      }
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       Alert.alert('Permission Denied', 'Please allow location access.');
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      let loc = await Location.getCurrentPositionAsync({});
-      setLocation(loc);
-      setLoading(false);
-    })();
-  }, []);
+  //     let loc = await Location.getCurrentPositionAsync({});
+  //     setLocation(loc);
+  //     setLoading(false);
+  //   })();
+  // }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -60,13 +59,13 @@ const LocationScreen = () => {
         </TouchableOpacity>
 
         <Text style={styles.title}>Location</Text>
-        {/* 
+
         <TouchableOpacity>
           <View style={{ position: 'relative' }}>
             <Ionicons name='notifications-outline' size={25} color='black' />
             <View style={styles.redDot} />
           </View>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         <View style={{ width: 24 }} />
       </View>
       <ScrollView
@@ -78,7 +77,7 @@ const LocationScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={{ position: 'relative' }}>
-          <MapView
+          {/* <MapView
             style={styles.map}
             showsUserLocation={true}
             region={{
@@ -95,7 +94,7 @@ const LocationScreen = () => {
               }}
               title='You are here'
             />
-          </MapView>
+          </MapView> */}
         </View>
         <Text style={{ padding: 20, fontSize: 20, fontWeight: 'bold' }}>
           Detail Address

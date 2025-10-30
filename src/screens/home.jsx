@@ -1,29 +1,29 @@
-import React, { useRef, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useRef, useState } from 'react';
 import {
+  Dimensions,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-  Dimensions,
-  Image,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import Carousel, { Pagination } from 'react-native-reanimated-carousel';
-import ActionSheet from 'react-native-actions-sheet';
-import CustomButton from '../components/button';
-import ScrollViewHorizontal from '../components/scrollbar-horixental';
-import CustomTextInput from '../components/custom-text-input';
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
+import Carousel, { Pagination } from 'react-native-reanimated-carousel';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ProductDetailsSheet from '../components/activeSheet';
+import CustomButton from '../components/button';
+import CustomTextInput from '../components/custom-text-input';
+import ScrollViewHorizontal from '../components/scrollbar-horixental';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const data = [
   { id: 1, image: require('../../assets/slider1.png') },
@@ -31,30 +31,38 @@ const data = [
   { id: 3, image: require('../../assets/slider3.png') },
 ];
 
-const popularImages = [
+const initialImages = [
   {
-    id: 1,
+    id: '1',
     image: require('../../assets/slider1.png'),
     title: 'The Kite Runner',
-    price: '$14.99',
+    description:
+      'A heartbreaking story of friendship and redemption set in Afghanistan.',
+    price: '200.9$',
   },
   {
-    id: 2,
+    id: '2',
     image: require('../../assets/slider1.png'),
     title: 'Atomic Habits',
-    price: '$12.49',
+    description:
+      'A guide to building good habits and breaking bad ones through small changes.',
+    price: '100.9$',
   },
   {
-    id: 3,
+    id: '3',
     image: require('../../assets/slider1.png'),
     title: 'Rich Dad Poor Dad',
-    price: '$9.99',
+    description:
+      'Lessons on financial independence and mindset from two contrasting father figures.',
+    price: '20.1$',
   },
   {
-    id: 4,
+    id: '4',
     image: require('../../assets/slider1.png'),
     title: 'Ikigai',
-    price: '$10.99',
+    description:
+      'The Japanese secret to a long and happy life through purpose and balance.',
+    price: '19.3$',
   },
 ];
 
@@ -63,25 +71,21 @@ const popularBrands = [
     id: 1,
     image: require('../../assets/slider1.png'),
     title: 'Abdullah Ayaz',
-    price: 'Coder',
   },
   {
     id: 2,
     image: require('../../assets/slider1.png'),
     title: 'Zaki',
-    price: 'Coder',
   },
   {
     id: 3,
     image: require('../../assets/slider1.png'),
     title: 'Misbha',
-    price: 'Backend',
   },
   {
     id: 4,
     image: require('../../assets/slider1.png'),
     title: 'Ammmar',
-    price: 'Graphic Designer',
   },
 ];
 
@@ -91,22 +95,7 @@ const Home = () => {
   const ref = useRef(null);
   const progress = useSharedValue(0);
   const searchHeight = useSharedValue(0);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [quantity, setQuantity] = useState(1);
-  const [lastPressed, setLastPressed] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const increment = () => {
-    setQuantity(quantity + 1);
-    setLastPressed('increment');
-  };
-
-  const decrement = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-      setLastPressed('decrement');
-    }
-  };
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: withTiming(searchHeight.value, {
@@ -120,10 +109,7 @@ const Home = () => {
   }));
 
   const openModal = (item) => {
-    console.log(item);
     setSelectedProduct(item);
-    setQuantity(1);
-    setIsFavorite(false);
     actionSheetRef.current?.setModalVisible(true);
   };
 
@@ -146,8 +132,8 @@ const Home = () => {
           <Text style={styles.title}>Home</Text>
           <TouchableOpacity>
             <View style={{ position: 'relative' }}>
-              {/* <Ionicons name='notifications-outline' size={25} color='black' />
-              <View style={styles.redDot} /> */}
+              <Ionicons name='notifications-outline' size={25} color='black' />
+              <View style={styles.redDot} />
             </View>
           </TouchableOpacity>
         </View>
@@ -179,7 +165,7 @@ const Home = () => {
           }}
           renderItem={({ item }) => (
             <View style={styles.slide}>
-              <View style={{ flex: 1 }}>
+              <View style={{ width: '40%' }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
                   Special Offer
                 </Text>
@@ -187,11 +173,13 @@ const Home = () => {
                   Discount 25%
                 </Text>
                 <CustomButton
-                  style={{ width: '50%', padding: 10, borderRadius: 20 }}
+                  style={{ width: '55%', padding: 10, borderRadius: 20 }}
                   title='Order Now'
                 />
               </View>
-              <Image source={item.image} style={styles.image} />
+              <View style={{ width: '60%' }}>
+                <Image source={item.image} style={styles.image} />
+              </View>
             </View>
           )}
         />
@@ -225,7 +213,7 @@ const Home = () => {
         </Text>
 
         <ScrollViewHorizontal
-          data={popularImages}
+          data={initialImages}
           containerStyle={{ marginTop: 10 }}
           imageStyle={{ borderRadius: 15 }}
           titleStyle={{ color: 'black', fontWeight: 'bold' }}
@@ -263,173 +251,10 @@ const Home = () => {
           priceStyle={{ color: '#A6A6A6', fontSize: 12, fontWeight: 'bold' }}
         />
       </ScrollView>
-      <ActionSheet
+      <ProductDetailsSheet
         ref={actionSheetRef}
-        gestureEnabled
-        defaultOverlayOpacity={0.5}
-        containerStyle={{
-          flex: 1,
-          padding: 20,
-          backgroundColor: '#F5F5F5',
-        }}
-      >
-        {selectedProduct && (
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <Image
-              source={selectedProduct.image}
-              style={{
-                width: '100%',
-                height: Dimensions.get('screen').height / 2.5,
-                borderRadius: 20,
-              }}
-              resizeMode='contain'
-            />
-
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: 15,
-              }}
-            >
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                {selectedProduct.title}
-              </Text>
-
-              <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
-                <Ionicons
-                  name={isFavorite ? 'heart' : 'heart-outline'}
-                  size={30}
-                  color={isFavorite ? '#54408C' : '#000'}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <Text style={{ color: '#A6A6A6', paddingVertical: 10 }}>
-              {selectedProduct.description}
-            </Text>
-
-            <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 8 }}>
-              Review
-            </Text>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                marginBottom: 20,
-                alignItems: 'center',
-              }}
-            >
-              {[...Array(4)].map((_, i) => (
-                <Ionicons key={i} name='star' size={28} color='#54408C' />
-              ))}
-              <Ionicons name='star' size={28} color='#000' />
-              <Text style={{ fontWeight: 'bold', paddingHorizontal: 10 }}>
-                (4.0)
-              </Text>
-            </View>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                marginBottom: 20,
-                alignItems: 'center',
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: '#FAFAFA',
-                  borderRadius: 10,
-                  paddingHorizontal: 5,
-                  marginRight: 10,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={decrement}
-                  style={{
-                    backgroundColor:
-                      lastPressed === 'decrement' ? '#54408C' : '#ccc',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginRight: 10,
-                  }}
-                >
-                  <Text
-                    style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}
-                  >
-                    -
-                  </Text>
-                </TouchableOpacity>
-
-                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                  {quantity}
-                </Text>
-
-                <TouchableOpacity
-                  onPress={increment}
-                  style={{
-                    backgroundColor:
-                      lastPressed === 'increment' ? '#54408C' : '#ccc',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginLeft: 10,
-                  }}
-                >
-                  <Text
-                    style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}
-                  >
-                    +
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              <Text
-                style={{
-                  fontWeight: 'bold',
-                  fontSize: 16,
-                  color: '#54408C',
-                }}
-              >
-                ${(3.9 * quantity).toFixed(2)}
-              </Text>
-            </View>
-
-            <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-            >
-              <CustomButton
-                style={{
-                  padding: 20,
-                  borderRadius: 60,
-                  width: '65%',
-                }}
-                title='Continue Shopping'
-                textStyle={{ fontWeight: 'bold' }}
-              />
-              <CustomButton
-                onPress={() => navigation.navigate('ConformationOrder')}
-                style={{
-                  padding: 20,
-                  borderRadius: 60,
-                  width: '30%',
-                  backgroundColor: '#FAF9FD',
-                }}
-                title='View Cart'
-                textStyle={{ fontWeight: 'bold', color: '#54408C' }}
-              />
-            </View>
-          </ScrollView>
-        )}
-      </ActionSheet>
+        selectedProduct={selectedProduct}
+      />
     </SafeAreaView>
   );
 };
@@ -455,7 +280,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
   },
   slide: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -464,7 +288,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   image: {
-    width: width / 2.2,
+    width: '100%',
     height: '100%',
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,

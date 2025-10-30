@@ -1,26 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React, { useRef, useState } from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { FlashList } from '@shopify/flash-list';
+import { useRef, useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { FlashList } from '@shopify/flash-list';
-import ActionSheet from 'react-native-actions-sheet';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ProductDetailsSheet from '../components/activeSheet';
 import CustomTextInput from '../components/custom-text-input';
-import CustomButton from '../components/button';
 
 const tags = [
   { id: 1, tag: 'All' },
@@ -28,7 +19,6 @@ const tags = [
   { id: 3, tag: 'Self Love' },
   { id: 4, tag: 'Science' },
   { id: 5, tag: 'Romantic' },
-  { id: 6, tag: 'Angry' },
 ];
 
 const initialImages = [
@@ -36,41 +26,38 @@ const initialImages = [
     id: '1',
     image: require('../../assets/slider1.png'),
     title: 'The Kite Runner',
-    description:
-      'A heartbreaking story of friendship and redemption set in Afghanistan.',
+    description: 'A heartbreaking story of friendship and redemption.',
+    quantity: 1,
   },
   {
     id: '2',
     image: require('../../assets/slider1.png'),
     title: 'Atomic Habits',
-    description:
-      'A guide to building good habits and breaking bad ones through small changes.',
+    description: 'A guide to building habits and breaking bad ones.',
+    quantity: 1,
   },
   {
     id: '3',
     image: require('../../assets/slider1.png'),
     title: 'Rich Dad Poor Dad',
-    description:
-      'Lessons on financial independence and mindset from two contrasting father figures.',
+    description: 'Lessons on financial independence and mindset.',
+    quantity: 1,
   },
   {
     id: '4',
     image: require('../../assets/slider1.png'),
     title: 'Ikigai',
-    description:
-      'The Japanese secret to a long and happy life through purpose and balance.',
+    description: 'The Japanese secret to a long and happy life.',
+    quantity: 1,
   },
 ];
 
 const Products = () => {
   const navigation = useNavigation();
   const actionSheetRef = useRef(null);
-
   const [selectedTag, setSelectedTag] = useState('All');
+  const [products, setProducts] = useState(initialImages);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [quantity, setQuantity] = useState(1);
-  const [lastPressed, setLastPressed] = useState(null);
 
   const searchHeight = useSharedValue(0);
 
@@ -93,23 +80,15 @@ const Products = () => {
     searchHeight.value = searchHeight.value === 0 ? 60 : 0;
   };
 
-  const increment = () => {
-    setLastPressed('increment');
-    setQuantity((prev) => prev + 1);
-  };
-
-  const decrement = () => {
-    if (quantity > 1) {
-      setLastPressed('decrement');
-      setQuantity((prev) => prev - 1);
-    }
-  };
-
   const openProductDetails = (product) => {
     setSelectedProduct(product);
-    setIsFavorite(false);
-    setQuantity(1);
     actionSheetRef.current?.show();
+  };
+
+  const updateQuantity = (id, newQty) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, quantity: newQty } : p))
+    );
   };
 
   const renderTag = ({ item }) => {
@@ -180,7 +159,7 @@ const Products = () => {
       />
 
       <FlashList
-        data={initialImages}
+        data={products}
         renderItem={renderProduct}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
@@ -188,173 +167,11 @@ const Products = () => {
         contentContainerStyle={{ padding: 20 }}
       />
 
-      <ActionSheet
+      <ProductDetailsSheet
         ref={actionSheetRef}
-        gestureEnabled
-        defaultOverlayOpacity={0.5}
-        containerStyle={{
-          flex: 1,
-          padding: 20,
-          backgroundColor: '#F5F5F5',
-        }}
-      >
-        {selectedProduct && (
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <Image
-              source={selectedProduct.image}
-              style={{
-                width: '100%',
-                height: Dimensions.get('screen').height / 2.5,
-                borderRadius: 20,
-              }}
-              resizeMode='contain'
-            />
-
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: 15,
-              }}
-            >
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                {selectedProduct.title}
-              </Text>
-
-              <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
-                <Ionicons
-                  name={isFavorite ? 'heart' : 'heart-outline'}
-                  size={30}
-                  color={isFavorite ? '#54408C' : '#000'}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <Text style={{ color: '#A6A6A6', paddingVertical: 10 }}>
-              {selectedProduct.description}
-            </Text>
-
-            <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 8 }}>
-              Review
-            </Text>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                marginBottom: 20,
-                alignItems: 'center',
-              }}
-            >
-              {[...Array(4)].map((_, i) => (
-                <Ionicons key={i} name='star' size={28} color='#54408C' />
-              ))}
-              <Ionicons name='star' size={28} color='#000' />
-              <Text style={{ fontWeight: 'bold', paddingHorizontal: 10 }}>
-                (4.0)
-              </Text>
-            </View>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                marginBottom: 20,
-                alignItems: 'center',
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: '#FAFAFA',
-                  borderRadius: 10,
-                  paddingHorizontal: 5,
-                  marginRight: 10,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={decrement}
-                  style={{
-                    backgroundColor:
-                      lastPressed === 'decrement' ? '#54408C' : '#ccc',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginRight: 10,
-                  }}
-                >
-                  <Text
-                    style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}
-                  >
-                    -
-                  </Text>
-                </TouchableOpacity>
-
-                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                  {quantity}
-                </Text>
-
-                <TouchableOpacity
-                  onPress={increment}
-                  style={{
-                    backgroundColor:
-                      lastPressed === 'increment' ? '#54408C' : '#ccc',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginLeft: 10,
-                  }}
-                >
-                  <Text
-                    style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}
-                  >
-                    +
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              <Text
-                style={{
-                  fontWeight: 'bold',
-                  fontSize: 16,
-                  color: '#54408C',
-                }}
-              >
-                ${(3.9 * quantity).toFixed(2)}
-              </Text>
-            </View>
-
-            <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-            >
-              <CustomButton
-                style={{
-                  padding: 20,
-                  borderRadius: 60,
-                  width: '65%',
-                }}
-                title='Continue Shopping'
-                textStyle={{ fontWeight: 'bold' }}
-              />
-              <CustomButton
-                onPress={() => navigation.navigate('ConformationOrder')}
-                style={{
-                  padding: 20,
-                  borderRadius: 60,
-                  width: '30%',
-                  backgroundColor: '#FAF9FD',
-                }}
-                title='View Cart'
-                textStyle={{ fontWeight: 'bold', color: '#54408C' }}
-              />
-            </View>
-          </ScrollView>
-        )}
-      </ActionSheet>
+        selectedProduct={selectedProduct}
+        updateQuantity={updateQuantity}
+      />
     </SafeAreaView>
   );
 };

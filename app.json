@@ -3,6 +3,7 @@
     "name": "hardwareironapp",
     "slug": "hardwareironapp",
     "version": "1.0.0",
+    "scheme": "hardwareironapp",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -26,6 +27,20 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "faf12293-2093-4754-b294-a8e6eb036486"
+      }
+    },
+    "owner": "abdullahkhan001"
   }
 }

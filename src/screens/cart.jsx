@@ -43,12 +43,12 @@ const Cart = () => {
 
             <TouchableOpacity>
               <View style={{ position: 'relative' }}>
-                {/* <Ionicons
+                <Ionicons
                   name='notifications-outline'
                   size={25}
                   color='black'
                 />
-                <View style={styles.redDot} /> */}
+                <View style={styles.redDot} />
               </View>
             </TouchableOpacity>
           </View>

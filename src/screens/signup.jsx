@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -7,8 +8,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 
 import CustomButton from '../components/button';
@@ -32,6 +31,9 @@ const Signup = () => {
 
   const submitData = () => {
     let valid = true;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{11}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
 
     if (!name.trim()) {
       setNameError('Name is required');
@@ -41,17 +43,30 @@ const Signup = () => {
     if (!email.trim()) {
       setEmailError('Email is required');
       valid = false;
+    } else if (!emailRegex.test(email)) {
+      setEmailError('Please enter a valid email');
+      valid = false;
     } else setEmailError('');
 
     if (!phoneNumber.trim()) {
       setPhoneError('Phone number is required');
+      valid = false;
+    } else if (!phoneRegex.test(phoneNumber)) {
+      setPhoneError('Please enter a valid 11-digit phone number');
       valid = false;
     } else setPhoneError('');
 
     if (!password.trim()) {
       setPasswordError('Password is required');
       valid = false;
-    } else setPasswordError('');
+    } else if (!passwordRegex.test(password)) {
+      setPasswordError(
+        'Password must be at least 6 characters and include both letters and numbers'
+      );
+      valid = false;
+    } else {
+      setPasswordError('');
+    }
 
     if (!valid) return;
 
@@ -109,6 +124,7 @@ const Signup = () => {
           value={phoneNumber}
           onChangeText={setPhoneNumber}
           error={phoneError}
+          keyboardType='numeric'
         />
 
         <CustomTextInput

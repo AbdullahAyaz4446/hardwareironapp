@@ -37,31 +37,26 @@ const initialImages = [
     id: '1',
     image: require('../../assets/slider1.png'),
     title: 'The Kite Runner',
-    price: '$14.99',
   },
   {
     id: '2',
     image: require('../../assets/slider1.png'),
     title: 'Atomic Habits',
-    price: '$12.49',
   },
   {
     id: '3',
     image: require('../../assets/slider1.png'),
     title: 'Rich Dad Poor Dad',
-    price: '$9.99',
   },
   {
     id: '4',
     image: require('../../assets/slider1.png'),
     title: 'Ikigai',
-    price: '$10.99',
   },
   {
     id: '5',
     image: require('../../assets/slider1.png'),
     title: 'Ikigai',
-    price: '$10.99',
   },
   {
     id: '6',
@@ -73,25 +68,21 @@ const initialImages = [
     id: '7',
     image: require('../../assets/slider1.png'),
     title: 'Ikigai',
-    price: '$10.99',
   },
   {
     id: '8',
     image: require('../../assets/slider1.png'),
     title: 'Ikigai',
-    price: '$10.99',
   },
   {
     id: '9',
     image: require('../../assets/slider1.png'),
     title: 'Ikigai',
-    price: '$10.99',
   },
   {
     id: '10',
     image: require('../../assets/slider1.png'),
     title: 'Ikigai last',
-    price: '$10.99',
   },
 ];
 
@@ -138,7 +129,6 @@ const Category = () => {
       >
         <Image source={item.image} style={styles.bookImage} />
         <Text style={styles.bookTitle}>{item.title}</Text>
-        <Text style={styles.bookPrice}>{item.price}</Text>
       </TouchableOpacity>
     </View>
   );

@@ -1,3 +1,4 @@
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import {
@@ -24,9 +25,13 @@ const Login = () => {
 
   const handleLogin = () => {
     let valid = true;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!email.trim()) {
       setEmailError('Email is required');
+      valid = false;
+    } else if (!emailRegex.test(email)) {
+      setEmailError('Please enter a valid email');
       valid = false;
     } else {
       setEmailError('');
@@ -35,12 +40,28 @@ const Login = () => {
     if (!password.trim()) {
       setPasswordError('Password is required');
       valid = false;
+    } else if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      valid = false;
     } else {
       setPasswordError('');
     }
 
     if (valid) {
-      navigation.navigate('Tab');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Tab' }],
+      });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log('User Info:', userInfo);
+    } catch (error) {
+      console.error('Google Sign-In Error:', error);
     }
   };
 
@@ -129,7 +150,10 @@ const Login = () => {
 
         <Bar />
 
-        <TouchableOpacity style={styles.socialButton}>
+        <TouchableOpacity
+          onPress={handleGoogleSignIn}
+          style={styles.socialButton}
+        >
           <Image
             source={require('../../assets/google.png')}
             style={styles.socialIcon}

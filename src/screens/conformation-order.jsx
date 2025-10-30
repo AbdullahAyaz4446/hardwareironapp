@@ -11,9 +11,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import CustomButton from '../components/button';
+
 import ActionSheet from 'react-native-actions-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import CustomButton from '../components/button';
 
 const ConformationOrder = () => {
   const navigation = useNavigation();
@@ -92,8 +93,8 @@ const ConformationOrder = () => {
 
         <TouchableOpacity>
           <View style={{ position: 'relative' }}>
-            {/* <Ionicons name='notifications-outline' size={25} color='black' />
-            <View style={styles.redDot} /> */}
+            <Ionicons name='notifications-outline' size={25} color='black' />
+            <View style={styles.redDot} />
           </View>
         </TouchableOpacity>
       </View>
@@ -322,7 +323,10 @@ const ConformationOrder = () => {
           marginHorizontal: 15,
           backgroundColor: '#54408C',
         }}
-        title='Order'
+        title='Place Order'
+        onPress={() => {
+          navigation.navigate('OrderRecevingRating');
+        }}
         textStyle={{
           fontWeight: 'bold',
           color: '#FFFFFF',
@@ -419,6 +423,7 @@ const ConformationOrder = () => {
             <TouchableOpacity
               onPress={() => setSelectedDeliveryDate('today')}
               style={{
+                width: '30%',
                 borderWidth: 1,
                 padding: 20,
                 borderRadius: 20,
@@ -426,12 +431,13 @@ const ConformationOrder = () => {
                   selectedDeliveryDate === 'today' ? '#54408C' : '#C4C4C4',
               }}
             >
-              <Text>Today</Text>
-              <Text>{currentDate}</Text>
+              <Text style={{ textAlign: 'center' }}>Today</Text>
+              <Text style={{ textAlign: 'center' }}>{currentDate}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setSelectedDeliveryDate('tomorrow')}
               style={{
+                width: '30%',
                 borderWidth: 1,
                 padding: 20,
                 borderRadius: 20,
@@ -439,8 +445,8 @@ const ConformationOrder = () => {
                   selectedDeliveryDate === 'tomorrow' ? '#54408C' : '#C4C4C4',
               }}
             >
-              <Text>Tomorrow</Text>
-              <Text>{tomorrowDate}</Text>
+              <Text style={{ textAlign: 'center' }}>Tomorrow</Text>
+              <Text style={{ textAlign: 'center' }}>{tomorrowDate}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -448,6 +454,8 @@ const ConformationOrder = () => {
                 setSelectedDeliveryDate('custom');
               }}
               style={{
+                paddingHorizontal: 30,
+                width: '30%',
                 borderWidth: 1,
                 padding: 20,
                 borderRadius: 20,
@@ -455,7 +463,7 @@ const ConformationOrder = () => {
                   selectedDeliveryDate === 'custom' ? '#54408C' : '#C4C4C4',
               }}
             >
-              <Text>Pick a date</Text>
+              <Text style={{ textAlign: 'center' }}>Pick a date</Text>
             </TouchableOpacity>
           </View>
           <Text
@@ -468,11 +476,13 @@ const ConformationOrder = () => {
               flexDirection: 'row',
               justifyContent: 'space-around',
               alignItems: 'center',
+              justifyContent: 'space-evenly',
             }}
           >
             <TouchableOpacity
               onPress={() => setSelectedDeliveryTime('10-11')}
               style={{
+                width: '40%',
                 borderWidth: 1,
                 padding: 20,
                 borderRadius: 20,
@@ -480,12 +490,13 @@ const ConformationOrder = () => {
                   selectedDeliveryTime === '10-11' ? '#54408C' : '#C4C4C4',
               }}
             >
-              <Text>Between</Text>
-              <Text>10PM : 11PM</Text>
+              <Text style={{ textAlign: 'center' }}>Between</Text>
+              <Text style={{ textAlign: 'center' }}>10PM : 11PM</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setSelectedDeliveryTime('11-12')}
               style={{
+                width: '40%',
                 borderWidth: 1,
                 padding: 20,
                 borderRadius: 20,
@@ -493,8 +504,8 @@ const ConformationOrder = () => {
                   selectedDeliveryTime === '11-12' ? '#54408C' : '#C4C4C4',
               }}
             >
-              <Text>Between</Text>
-              <Text>11PM : 12PM</Text>
+              <Text style={{ textAlign: 'center' }}>Between</Text>
+              <Text style={{ textAlign: 'center' }}>11PM : 12PM</Text>
             </TouchableOpacity>
           </View>
           <CustomButton

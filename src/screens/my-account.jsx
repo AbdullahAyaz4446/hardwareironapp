@@ -34,7 +34,7 @@ const MyAccount = () => {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -43,6 +43,55 @@ const MyAccount = () => {
     if (!result.canceled) {
       setProfileImage({ uri: result.assets[0].uri });
     }
+  };
+
+  const handleSave = () => {
+    let valid = true;
+
+    if (!name.trim()) {
+      setNameError('Full name is required');
+      valid = false;
+    } else {
+      setNameError('');
+    }
+
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      valid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setEmailError('Enter a valid email address');
+      valid = false;
+    } else {
+      setEmailError('');
+    }
+
+    const cleanedPhone = phone.replace(/\D/g, '');
+    if (!cleanedPhone) {
+      setPhoneError('Phone number is required');
+      valid = false;
+    } else if (!/^[0-9]{11}$/.test(cleanedPhone)) {
+      setPhoneError('Enter a valid 11-digit phone number');
+      valid = false;
+    } else {
+      setPhoneError('');
+    }
+
+    if (!password.trim()) {
+      setPasswordError('Password is required');
+      valid = false;
+    } else if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      valid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (!valid) return;
+
+    Alert.alert(
+      'Success',
+      'Your account details have been saved successfully!'
+    );
   };
 
   return (
@@ -61,7 +110,6 @@ const MyAccount = () => {
           </TouchableOpacity>
 
           <Text style={styles.title}>My Account</Text>
-
           <View style={{ width: 24 }} />
         </View>
 
@@ -111,9 +159,10 @@ const MyAccount = () => {
         />
 
         <CustomButton
-          style={{ padding: 20, fontWeight: 'bold', borderRadius: 60 }}
+          style={{ padding: 20, borderRadius: 60 }}
           title='Save Changes'
           textStyle={{ fontWeight: 'bold' }}
+          onPress={handleSave}
         />
       </ScrollView>
     </SafeAreaView>

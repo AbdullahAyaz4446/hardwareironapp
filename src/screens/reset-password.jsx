@@ -15,12 +15,17 @@ const ResetPassword = () => {
   const [cpassword, setCpassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
-
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
   const handleSubmit = () => {
     let valid = true;
 
     if (!password.trim()) {
       setPasswordError('Password is required');
+      valid = false;
+    } else if (!passwordRegex.test(password)) {
+      setPasswordError(
+        'Password must be at least 6 characters and include letters and numbers'
+      );
       valid = false;
     } else {
       setPasswordError('');

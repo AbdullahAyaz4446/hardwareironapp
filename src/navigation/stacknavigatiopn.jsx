@@ -24,6 +24,9 @@ import Location from '../screens/location';
 import Products from '../screens/products';
 import LocationDetailes from '../screens/locationDeatiles';
 import Favorites from '../screens/favorites';
+import HelpCenter from '../screens/help-center';
+import OrderRecevingRating from '../screens/order-recevinig-rating';
+import OrderHistory from '../screens/orderhistory';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -65,6 +68,12 @@ const StackNavigation = () => {
         <Stack.Screen name='Products' component={Products} />
         <Stack.Screen name='LocationDetailes' component={LocationDetailes} />
         <Stack.Screen name='Favorites' component={Favorites} />
+        <Stack.Screen name='HelpCenter' component={HelpCenter} />
+        <Stack.Screen
+          name='OrderRecevingRating'
+          component={OrderRecevingRating}
+        />
+        <Stack.Screen name='OrderHistory' component={OrderHistory} />
       </Stack.Navigator>
     </NavigationContainer>
   );

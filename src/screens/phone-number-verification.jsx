@@ -16,8 +16,8 @@ const PhoneNumberVerification = () => {
     if (!phoneNumber.trim()) {
       setPhoneError('Phone number is required');
       return;
-    } else if (!/^[0-9]{10,15}$/.test(phoneNumber)) {
-      setPhoneError('Enter a valid phone number (10–15 digits)');
+    } else if (!/^[0-9]{11}$/.test(phoneNumber)) {
+      setPhoneError('Please enter a valid 11-digit phone number');
       return;
     } else {
       setPhoneError('');

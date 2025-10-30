@@ -44,7 +44,7 @@ const BottomTabNavigator = () => {
           tabBarLabel: 'Cart',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? 'card' : 'card-outline'}
+              name={focused ? 'cart' : 'cart-outline'}
               size={size}
               color={focused ? '#54408C' : color}
             />
