@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -20,6 +20,7 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomTextInput from '../components/custom-text-input';
 import { FlashList } from '@shopify/flash-list';
+import { allCategory, baseUrl } from '../apis/server';
 
 const { width } = Dimensions.get('window');
 
@@ -91,7 +92,16 @@ const Category = () => {
   const searchHeight = useSharedValue(0);
   const [selectedTag, setSelectedTag] = useState('All');
   const [refreshing, setRefreshing] = useState(false);
-  const [popularImages, setPopularImages] = useState(initialImages);
+  const [popularImages, setPopularImages] = useState([]);
+
+  const getAllCategories = async () => {
+    const data = await allCategory();
+    setPopularImages(data);
+  };
+
+  useEffect(() => {
+    getAllCategories();
+  }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: withTiming(searchHeight.value, {
@@ -119,19 +129,24 @@ const Category = () => {
     }, 1500);
   };
 
-  const showList = ({ item }) => (
-    <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('Products');
-        }}
-        style={{ width: '90%', margin: 10 }}
-      >
-        <Image source={item.image} style={styles.bookImage} />
-        <Text style={styles.bookTitle}>{item.title}</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  const showList = ({ item }) => {
+    return (
+      <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Products', { categoryId: item.id });
+          }}
+          style={{ width: '90%', margin: 10 }}
+        >
+          <Image
+            source={{ uri: baseUrl + '/' + item.image }}
+            style={styles.bookImage}
+          />
+          <Text style={styles.bookTitle}>{item.name}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>

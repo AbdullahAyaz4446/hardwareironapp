@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
@@ -18,6 +18,7 @@ import { setSignup } from '../redux/slices/userSlice';
 const Signup = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -74,11 +75,10 @@ const Signup = () => {
       setSignup({
         name,
         email,
-        phoneNumber,
+        phone: phoneNumber,
         password,
       })
     );
-
     navigation.navigate('OtpVerificationOption');
   };
 

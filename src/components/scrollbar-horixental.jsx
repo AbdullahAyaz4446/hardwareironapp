@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
+import { baseUrl } from '../apis/server';
 
 const { width } = Dimensions.get('window');
 
@@ -32,14 +33,14 @@ const ScrollViewHorizontal = ({
           onPress={() => onPress?.(item)}
         >
           <Image
-            source={item.image}
+            source={{ uri: baseUrl + '/' + item.image }}
             style={[styles.image, imageStyle]}
             resizeMode='cover'
           />
 
           {item.title ? (
             <Text style={[styles.title, titleStyle]} numberOfLines={1}>
-              {item.title}
+              {item.name}
             </Text>
           ) : null}
 

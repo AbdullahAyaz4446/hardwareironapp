@@ -1,9 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import OnBordingComponents from '../components/onbording-components';
+import { useDispatch } from 'react-redux';
+import { setOnBording } from '../redux/slices/userSlice';
 
 const OnBording = () => {
   const navigation = useNavigation();
+  const disptach = useDispatch();
   return (
     <OnBordingComponents
       image={require('../../assets/welcome1.png')}
@@ -17,12 +20,14 @@ const OnBording = () => {
           index: 0,
           routes: [{ name: 'Login' }],
         });
+        disptach(setOnBording(true));
       }}
       onPressSignin={() => {
         navigation.reset({
           index: 0,
           routes: [{ name: 'Login' }],
         });
+        disptach(setOnBording(true));
       }}
       activebox1={{ backgroundColor: '#54408C', borderRadius: 10, padding: 5 }}
     />

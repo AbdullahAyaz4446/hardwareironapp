@@ -1,9 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import OnBordingComponents from '../components/onbording-components';
-
+import { useDispatch } from 'react-redux';
+import { setOnBording } from '../redux/slices/userSlice';
 const OnBording3 = () => {
   const navigation = useNavigation();
+  const disptach = useDispatch();
   return (
     <OnBordingComponents
       image={require('../../assets/welcome3.png')}
@@ -15,6 +17,7 @@ const OnBording3 = () => {
             index: 0,
             routes: [{ name: 'Login' }],
           });
+          disptach(setOnBording(true));
         } catch (error) {
           console.error(error);
         }
@@ -25,6 +28,7 @@ const OnBording3 = () => {
             index: 0,
             routes: [{ name: 'Login' }],
           });
+          disptach(setOnBording(true));
         } catch (error) {
           console.error(error);
         }
@@ -35,6 +39,7 @@ const OnBording3 = () => {
             index: 0,
             routes: [{ name: 'Login' }],
           });
+          disptach(setOnBording(true));
         } catch (error) {
           console.error(error);
         }

@@ -27,12 +27,19 @@ import Favorites from '../screens/favorites';
 import HelpCenter from '../screens/help-center';
 import OrderRecevingRating from '../screens/order-recevinig-rating';
 import OrderHistory from '../screens/orderhistory';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
+  const onBordingFlag = useSelector((state) => state.user.onBording);
+
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        initialRouteName={onBordingFlag ? 'Login' : 'OnBording1'}
+        screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen name='OnBording1' component={OnBording1} />
         <Stack.Screen name='OnBording2' component={OnBording2} />
         <Stack.Screen name='OnBording3' component={OnBording3} />

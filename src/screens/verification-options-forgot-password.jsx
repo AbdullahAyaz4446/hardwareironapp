@@ -13,12 +13,9 @@ import React, { useState } from 'react';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import CustomButton from '../components/button';
 import TopBar from '../components/topBar';
-import { useDispatch } from 'react-redux';
-import { setFlag } from '../redux/slices/flagSlice';
 
 const OtpVerificationOptionForgotpassword = () => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
 
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -88,11 +85,13 @@ const OtpVerificationOptionForgotpassword = () => {
               disable={selectedOption === null}
               onPress={() => {
                 if (selectedOption == 'email') {
-                  navigation.navigate('OtpVerification');
-                  dispatch(setFlag(true));
+                  navigation.navigate('OtpVerification', {
+                    flag: true,
+                  });
                 } else {
-                  navigation.navigate('PhoneNumberVerification');
-                  dispatch(setFlag(true));
+                  navigation.navigate('PhoneNumberVerification', {
+                    flag: true,
+                  });
                 }
               }}
             />

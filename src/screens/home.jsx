@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -22,6 +22,7 @@ import ProductDetailsSheet from '../components/activeSheet';
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
 import ScrollViewHorizontal from '../components/scrollbar-horixental';
+import { allCategory } from '../apis/server';
 
 const { width } = Dimensions.get('window');
 
@@ -35,7 +36,7 @@ const initialImages = [
   {
     id: '1',
     image: require('../../assets/slider1.png'),
-    title: 'The Kite Runner',
+    name: 'The Kite Runner',
     description:
       'A heartbreaking story of friendship and redemption set in Afghanistan.',
     price: '200.9$',
@@ -43,7 +44,7 @@ const initialImages = [
   {
     id: '2',
     image: require('../../assets/slider1.png'),
-    title: 'Atomic Habits',
+    name: 'Atomic Habits',
     description:
       'A guide to building good habits and breaking bad ones through small changes.',
     price: '100.9$',
@@ -51,7 +52,7 @@ const initialImages = [
   {
     id: '3',
     image: require('../../assets/slider1.png'),
-    title: 'Rich Dad Poor Dad',
+    name: 'Rich Dad Poor Dad',
     description:
       'Lessons on financial independence and mindset from two contrasting father figures.',
     price: '20.1$',
@@ -59,33 +60,10 @@ const initialImages = [
   {
     id: '4',
     image: require('../../assets/slider1.png'),
-    title: 'Ikigai',
+    name: 'Ikigai',
     description:
       'The Japanese secret to a long and happy life through purpose and balance.',
     price: '19.3$',
-  },
-];
-
-const popularBrands = [
-  {
-    id: 1,
-    image: require('../../assets/slider1.png'),
-    title: 'Abdullah Ayaz',
-  },
-  {
-    id: 2,
-    image: require('../../assets/slider1.png'),
-    title: 'Zaki',
-  },
-  {
-    id: 3,
-    image: require('../../assets/slider1.png'),
-    title: 'Misbha',
-  },
-  {
-    id: 4,
-    image: require('../../assets/slider1.png'),
-    title: 'Ammmar',
   },
 ];
 
@@ -96,6 +74,16 @@ const Home = () => {
   const progress = useSharedValue(0);
   const searchHeight = useSharedValue(0);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [popularImages, setPopularImages] = useState([]);
+
+  const getAllCategories = async () => {
+    const data = await allCategory();
+    setPopularImages(data);
+  };
+
+  useEffect(() => {
+    getAllCategories();
+  }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: withTiming(searchHeight.value, {
@@ -240,7 +228,7 @@ const Home = () => {
         </View>
 
         <ScrollViewHorizontal
-          data={popularBrands}
+          data={popularImages.slice(0, 4)}
           containerStyle={{ marginTop: 10 }}
           imageStyle={{
             width: width / 3,

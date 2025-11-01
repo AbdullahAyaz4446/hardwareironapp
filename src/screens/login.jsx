@@ -1,6 +1,6 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Image,
   ScrollView,
@@ -8,22 +8,34 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Bar from '../components/bar';
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { useSelector } from 'react-redux';
+import { logIn } from '../apis/server';
 
 const Login = () => {
   const navigation = useNavigation();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const user = useSelector((state) => state.user);
 
-  const handleLogin = () => {
+  useEffect(() => {
+    if (
+      user.user.email == 'Abdullahayaz131@gmail.com' &&
+      user.user.password == 'Abdullah4446'
+    ) {
+      navigation.navigate('Tab');
+    }
+  }, [user]);
+
+  const handleLogin = async () => {
     let valid = true;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -48,18 +60,48 @@ const Login = () => {
     }
 
     if (valid) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Tab' }],
+      try {
+        const result = await logIn(email, password);
+        // if (result) {
+        //   navigation.reset({
+        //     index: 0,
+        //     routes: [{ name: 'Tab' }],
+        //   });
+        // }
+        console.log(result);
+      } catch (error) {
+        console.error('Login error:', error);
+      }
+    }
+  };
+
+  const handleAppleSignIN = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
       });
+
+      console.log('Apple login success:', credential);
+    } catch (error) {
+      if (error.code === 'ERR_CANCELED') {
+        console.log('User canceled Apple Sign-In');
+      } else {
+        console.error('Apple Sign-In error:', error);
+      }
     }
   };
 
   const handleGoogleSignIn = async () => {
     try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log('User Info:', userInfo);
+      const hasPlayServices = await GoogleSignin.hasPlayServices();
+      if (hasPlayServices) {
+        await GoogleSignin.signOut();
+        const userInfo = await GoogleSignin.signIn();
+        console.log('User Info:', userInfo);
+      }
     } catch (error) {
       console.error('Google Sign-In Error:', error);
     }
@@ -160,14 +202,18 @@ const Login = () => {
           />
           <Text style={{ paddingLeft: 10 }}>Sign in with Google</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.socialButton, { marginBottom: 40 }]}>
-          <Image
-            source={require('../../assets/apple.png')}
-            style={styles.socialIcon}
-          />
-          <Text style={{ paddingLeft: 10 }}>Sign in with Apple</Text>
-        </TouchableOpacity>
+        {Platform.OS === 'ios' && (
+          <TouchableOpacity
+            onPress={handleAppleSignIN}
+            style={[styles.socialButton, { marginBottom: 40 }]}
+          >
+            <Image
+              source={require('../../assets/apple.png')}
+              style={styles.socialIcon}
+            />
+            <Text style={{ paddingLeft: 10 }}>Sign in with Apple</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

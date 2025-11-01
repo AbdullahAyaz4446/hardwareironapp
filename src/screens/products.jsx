@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   Easing,
@@ -12,6 +12,7 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ProductDetailsSheet from '../components/activeSheet';
 import CustomTextInput from '../components/custom-text-input';
+import { baseUrl, productById } from '../apis/server';
 
 const tags = [
   { id: 1, tag: 'All' },
@@ -52,12 +53,13 @@ const initialImages = [
   },
 ];
 
-const Products = () => {
+const Products = ({ route }) => {
   const navigation = useNavigation();
   const actionSheetRef = useRef(null);
   const [selectedTag, setSelectedTag] = useState('All');
   const [products, setProducts] = useState(initialImages);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const categoryId = route.params.categoryId;
 
   const searchHeight = useSharedValue(0);
 
@@ -91,6 +93,15 @@ const Products = () => {
     );
   };
 
+  const getAllProducts = async () => {
+    const data = await productById(categoryId);
+    setProducts(data);
+  };
+
+  useEffect(() => {
+    getAllProducts();
+  }, []);
+
   const renderTag = ({ item }) => {
     const isSelected = selectedTag === item.tag;
     return (
@@ -112,18 +123,23 @@ const Products = () => {
     );
   };
 
-  const renderProduct = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => openProductDetails(item)}
-    >
-      <Image source={item.image} style={styles.bookImage} />
-      <View style={{ marginLeft: 15, flex: 1 }}>
-        <Text style={styles.bookTitle}>{item.title}</Text>
-        <Text style={styles.bookDescription}>{item.description}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderProduct = ({ item }) => {
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => openProductDetails(item)}
+      >
+        <Image
+          source={{ uri: baseUrl + '/' + item.image }}
+          style={styles.bookImage}
+        />
+        <View style={{ marginLeft: 15, flex: 1 }}>
+          <Text style={styles.bookTitle}>{item.name}</Text>
+          <Text style={styles.bookDescription}>{item.Descripation}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>

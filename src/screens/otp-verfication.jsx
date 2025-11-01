@@ -13,12 +13,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import TopBar from '../components/topBar';
 import CustomButton from '../components/button';
-import { useSelector } from 'react-redux';
-
-const OtpVerification = () => {
+import { useState } from 'react';
+const OtpVerification = ({ route }) => {
   const navigation = useNavigation();
-  const flag = useSelector((state) => state.flag.flag);
-  console.log(flag);
+  const [otpInput, setOtpInput] = useState('');
+  const flag = route.params.flag;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -50,7 +49,7 @@ const OtpVerification = () => {
             onFocus={() => console.log('Focused')}
             onBlur={() => console.log('Blurred')}
             onTextChange={(text) => console.log(text)}
-            onFilled={(text) => console.log(`OTP is ${text}`)}
+            onFilled={(text) => setOtpInput(text)}
             textInputProps={{
               accessibilityLabel: 'One-Time Password',
             }}
@@ -94,13 +93,17 @@ const OtpVerification = () => {
               title='Continue'
               textStyle={styles.buttonText}
               onPress={() => {
-                if (flag) {
-                  navigation.navigate('ResetPassword');
+                if (otpInput == '4446') {
+                  if (flag) {
+                    navigation.navigate('ResetPassword');
+                  } else {
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: 'SuccessVerification' }],
+                    });
+                  }
                 } else {
-                  navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'SuccessVerification' }],
-                  });
+                  console.error('plz try again your otp is not right');
                 }
               }}
             />

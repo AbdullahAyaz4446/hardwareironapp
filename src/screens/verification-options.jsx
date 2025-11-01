@@ -7,18 +7,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import CustomButton from '../components/button';
 import TopBar from '../components/topBar';
-import { useDispatch } from 'react-redux';
 
 const OtpVerificationOption = () => {
   const navigation = useNavigation();
   const [selectedOption, setSelectedOption] = useState(null);
-  const dispatch = useDispatch();
 
   return (
     <SafeAreaView style={styles.safeArea}>

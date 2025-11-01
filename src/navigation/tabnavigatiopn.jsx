@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Home from '../screens/home';
 import Profile from '../screens/profile';
 import Cart from '../screens/cart';
+import ConformationOrder from '../screens/conformation-order';
 
 const Tab = createBottomTabNavigator();
 
@@ -39,7 +40,7 @@ const BottomTabNavigator = () => {
 
       <Tab.Screen
         name='Cart'
-        component={Cart}
+        component={ConformationOrder}
         options={{
           tabBarLabel: 'Cart',
           tabBarIcon: ({ color, size, focused }) => (

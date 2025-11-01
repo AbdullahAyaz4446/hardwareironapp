@@ -7,10 +7,11 @@ import TopBar from '../components/topBar';
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
 
-const PhoneNumberVerification = () => {
+const PhoneNumberVerification = ({ route }) => {
   const navigation = useNavigation();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneError, setPhoneError] = useState('');
+  const flag = route.params.flag;
 
   const handleContinue = () => {
     if (!phoneNumber.trim()) {
@@ -21,7 +22,9 @@ const PhoneNumberVerification = () => {
       return;
     } else {
       setPhoneError('');
-      navigation.navigate('OtpVerification');
+      navigation.navigate('OtpVerification', {
+        flag: flag,
+      });
     }
   };
 

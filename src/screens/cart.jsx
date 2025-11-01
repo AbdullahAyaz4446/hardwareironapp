@@ -10,25 +10,30 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
+import CustomButton from '../components/button';
+import { createOrder } from '../apis/server';
 
 const Cart = () => {
   const navigation = useNavigation();
+  const cartItem = useSelector((state) => state.user.cart);
+  const totalPrice = cartItem.reduce(
+    (sum, item) => sum + parseFloat(item.price),
+    0
+  );
+  const productList = cartItem.map((item) => item.id).join(',');
+
+  const handlePlaceHolder = () => {
+    try {
+      createOrder();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       <View style={{ flex: 1 }}>
-        <Ionicons
-          name='cart-outline'
-          size={300}
-          color='#170606ff'
-          style={{
-            position: 'absolute',
-            top: '25%',
-            left: '10%',
-            opacity: 0.2,
-            zIndex: -1,
-          }}
-        />
-
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -52,7 +57,98 @@ const Cart = () => {
               </View>
             </TouchableOpacity>
           </View>
+          {cartItem.length == 0 ? (
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Ionicons
+                name='cart-outline'
+                size={300}
+                color='#170606ff'
+                style={{
+                  opacity: 0.2,
+                  zIndex: -1,
+                }}
+              />
+              <Text
+                style={{
+                  color: '#000',
+                  fontSize: 20,
+                  fontWeight: '500',
+                }}
+              >
+                Empty Cart
+              </Text>
+            </View>
+          ) : (
+            <View
+              style={{
+                borderWidth: 1,
+                borderRadius: 20,
+                borderColor: '#C4C4C4',
+                padding: 20,
+              }}
+            >
+              {cartItem.map((item, index) => {
+                console.log(item);
+                return (
+                  <View
+                    key={index}
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingBottom: 15,
+                    }}
+                  >
+                    <Text>{item.name}</Text>
+                    <Text>{item.price}</Text>
+                  </View>
+                );
+              })}
+
+              <View style={{ borderWidth: 0.5, borderColor: '#C4C4C4' }} />
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingVertical: 20,
+                }}
+              >
+                <Text>Shipping</Text>
+                <Text>{100}</Text>
+              </View>
+
+              <View style={{ borderWidth: 0.5, borderColor: '#C4C4C4' }} />
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingTop: 20,
+                }}
+              >
+                <Text style={{ fontWeight: 'bold' }}>Total Payment</Text>
+                <Text style={{ fontWeight: 'bold' }}>{totalPrice + 100}</Text>
+              </View>
+            </View>
+          )}
         </ScrollView>
+        <CustomButton
+          style={{
+            padding: 20,
+            fontWeight: 'bold',
+            borderRadius: 60,
+            marginBottom: 0,
+            marginHorizontal: 20,
+          }}
+          title='Place Order'
+          textStyle={{ fontWeight: 'bold' }}
+        />
       </View>
     </SafeAreaView>
   );

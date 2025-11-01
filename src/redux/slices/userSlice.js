@@ -1,9 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  name: '',
-  email: '',
-  phoneNumber: '',
+  user: {
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+  },
+  onBording: false,
+  cart: [],
 };
 
 export const userSlice = createSlice({
@@ -11,19 +16,17 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setSignup(state, action) {
-      state.name = action.payload.name;
-      state.email = action.payload.email;
-      state.phoneNumber = action.payload.phoneNumber;
-      state.password = action.payload.password;
-      console.log(state);
+      state.user = action.payload;
     },
-    reSetUser(state) {
-      state.name = '';
-      state.email = '';
-      state.phoneNumber = '';
+    setOnBording(state, action) {
+      state.onBording = action.payload;
     },
+    setCart(state, action) {
+      state.cart = action.payload;
+    },
+    reset: () => initialState,
   },
 });
 
-export const { setSignup, reSetUser } = userSlice.actions;
+export const { setSignup, setOnBording, setCart, reset } = userSlice.actions;
 export default userSlice.reducer;

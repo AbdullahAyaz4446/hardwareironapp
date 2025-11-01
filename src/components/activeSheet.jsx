@@ -11,6 +11,9 @@ import {
 } from 'react-native';
 import ActionSheet from 'react-native-actions-sheet';
 import CustomButton from './button';
+import { baseUrl } from '../apis/server';
+import { useDispatch, useSelector } from 'react-redux';
+import { reset, setCart } from '../redux/slices/userSlice';
 
 const ProductDetailsSheet = React.forwardRef(
   ({ selectedProduct, updateQuantity }, ref) => {
@@ -18,10 +21,35 @@ const ProductDetailsSheet = React.forwardRef(
     const [quantity, setQuantity] = useState(1);
     const [lastPressed, setLastPressed] = useState(null);
     const navigation = useNavigation();
+    const dispatch = useDispatch();
+    const cartItem = useSelector((state) => state.user.cart);
+    const [button, setButton] = useState(false);
 
-    useEffect(() => {
-      if (selectedProduct) setQuantity(selectedProduct.quantity || 1);
-    }, [selectedProduct]);
+    // useEffect(() => {
+    //   setButton(cartItem.filter(a=>a.id==selectedProduct.id))
+    // }, []);
+
+    const addToCart = () => {
+      try {
+        let arr = [...cartItem];
+        if (arr.length == 0) {
+          arr.push(selectedProduct);
+        } else {
+          const index = arr.findIndex((x) => x.id == selectedProduct.id);
+          if (index != -1) {
+            arr.splice(index, 1);
+          } else {
+            arr.push(selectedProduct);
+          }
+        }
+
+        dispatch(setCart(arr));
+      } catch (error) {
+        console.error(error);
+      }
+
+      // dispatch(reset());
+    };
 
     const increment = () => {
       const newQty = quantity + 1;
@@ -56,7 +84,7 @@ const ProductDetailsSheet = React.forwardRef(
         {selectedProduct && (
           <ScrollView showsVerticalScrollIndicator={false}>
             <Image
-              source={selectedProduct.image}
+              source={{ uri: baseUrl + '/' + selectedProduct.image }}
               style={{
                 width: '100%',
                 height: Dimensions.get('screen').height / 2.5,
@@ -74,7 +102,7 @@ const ProductDetailsSheet = React.forwardRef(
               }}
             >
               <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                {selectedProduct.title}
+                {selectedProduct.name}
               </Text>
 
               <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
@@ -182,9 +210,19 @@ const ProductDetailsSheet = React.forwardRef(
                   color: '#54408C',
                 }}
               >
-                ${(3.9 * quantity).toFixed(2)}
+                {(selectedProduct.price * quantity).toFixed(2)}
               </Text>
             </View>
+            <CustomButton
+              style={{
+                padding: 20,
+                borderRadius: 60,
+                width: '100%',
+              }}
+              title='Add To cart'
+              textStyle={{ fontWeight: 'bold' }}
+              onPress={addToCart}
+            />
 
             <View
               style={{ flexDirection: 'row', justifyContent: 'space-between' }}
@@ -193,7 +231,7 @@ const ProductDetailsSheet = React.forwardRef(
                 style={{
                   padding: 20,
                   borderRadius: 60,
-                  width: '65%',
+                  width: '48%',
                 }}
                 title='Continue Shopping'
                 textStyle={{ fontWeight: 'bold' }}
@@ -203,7 +241,7 @@ const ProductDetailsSheet = React.forwardRef(
                 style={{
                   padding: 20,
                   borderRadius: 60,
-                  width: '30%',
+                  width: '48%',
                   backgroundColor: '#FAF9FD',
                 }}
                 title='View Cart'

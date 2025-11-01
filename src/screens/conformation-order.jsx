@@ -15,6 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import ActionSheet from 'react-native-actions-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CustomButton from '../components/button';
+import { useSelector } from 'react-redux';
+import { createOrder } from '../apis/server';
 
 const ConformationOrder = () => {
   const navigation = useNavigation();
@@ -28,6 +30,11 @@ const ConformationOrder = () => {
   const [tomorrowDate, setTomorrowDate] = useState('');
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState(null);
   const [selectedDeliveryTime, setSelectedDeliveryTime] = useState(null);
+  const cartItem = useSelector((state) => state.user.cart);
+  const totalPrice = cartItem.reduce(
+    (sum, item) => sum + parseFloat(item.price),
+    0
+  );
 
   const products = [
     { id: '1', name: 'Squid Sweet and Sour Salad', price: 19.99 },
@@ -78,9 +85,20 @@ const ConformationOrder = () => {
     }
   };
 
-  const totalPrice = products.reduce((acc, item) => acc + item.price, 0);
   const shipping = 2;
   const finalTotal = (totalPrice + shipping).toFixed(2);
+
+  const handlePlaceOrder = () => {
+    try {
+      createOrder();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'OrderRecevingRating' }],
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
@@ -103,7 +121,8 @@ const ConformationOrder = () => {
         contentContainerStyle={{
           flexGrow: 1,
           backgroundColor: '#FFFFFF',
-          padding: 20,
+          paddingTop: 20,
+          paddingHorizontal: 20,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -173,7 +192,6 @@ const ConformationOrder = () => {
             borderWidth: 1,
             borderRadius: 20,
             borderColor: '#C4C4C4',
-            marginBottom: 20,
           }}
         >
           <View style={{ padding: 20 }}>
@@ -190,7 +208,7 @@ const ConformationOrder = () => {
               }}
             >
               <Text>Price</Text>
-              <Text>${totalPrice.toFixed(2)}</Text>
+              <Text>Rs.{totalPrice.toFixed(2)}/-</Text>
             </View>
             <View
               style={{
@@ -200,7 +218,7 @@ const ConformationOrder = () => {
               }}
             >
               <Text>Shipping</Text>
-              <Text>${shipping.toFixed(2)}</Text>
+              <Text>Rs.{shipping.toFixed(2)}/-</Text>
             </View>
             <View style={{ borderWidth: 0.5, borderColor: '#C4C4C4' }} />
             <View
@@ -211,7 +229,7 @@ const ConformationOrder = () => {
               }}
             >
               <Text style={{ fontWeight: 'bold' }}>Total Payment</Text>
-              <Text style={{ fontWeight: 'bold' }}>${finalTotal}</Text>
+              <Text style={{ fontWeight: 'bold' }}>Rs.{finalTotal}/-</Text>
             </View>
           </View>
           <View style={{ borderWidth: 0.5, borderColor: '#C4C4C4' }} />
@@ -238,6 +256,7 @@ const ConformationOrder = () => {
             borderColor: '#C4C4C4',
             marginBottom: 20,
             padding: 20,
+            marginTop: 20,
           }}
         >
           <Text style={{ paddingBottom: 10, fontSize: 18, fontWeight: 'bold' }}>
@@ -278,7 +297,6 @@ const ConformationOrder = () => {
             borderWidth: 1,
             borderRadius: 20,
             borderColor: '#C4C4C4',
-            marginBottom: 20,
             padding: 20,
           }}
         >
@@ -322,10 +340,11 @@ const ConformationOrder = () => {
           borderRadius: 60,
           marginHorizontal: 15,
           backgroundColor: '#54408C',
+          marginTop: 20,
         }}
         title='Place Order'
         onPress={() => {
-          navigation.navigate('OrderRecevingRating');
+          handlePlaceOrder;
         }}
         textStyle={{
           fontWeight: 'bold',
@@ -354,7 +373,7 @@ const ConformationOrder = () => {
           >
             <View style={{ padding: 20 }}>
               <FlatList
-                data={products}
+                data={cartItem}
                 keyExtractor={(item) => item.id}
                 scrollEnabled={false}
                 renderItem={({ item }) => (
@@ -366,7 +385,7 @@ const ConformationOrder = () => {
                     }}
                   >
                     <Text>{item.name}</Text>
-                    <Text>${item.price.toFixed(2)}</Text>
+                    <Text>Rs.{item.price.toFixed(2)}/-</Text>
                   </View>
                 )}
               />
@@ -381,7 +400,7 @@ const ConformationOrder = () => {
                 }}
               >
                 <Text>Shipping</Text>
-                <Text>${shipping.toFixed(2)}</Text>
+                <Text>Rs.{shipping.toFixed(2)}/-</Text>
               </View>
 
               <View style={{ borderWidth: 0.5, borderColor: '#C4C4C4' }} />
@@ -394,7 +413,7 @@ const ConformationOrder = () => {
                 }}
               >
                 <Text style={{ fontWeight: 'bold' }}>Total Payment</Text>
-                <Text style={{ fontWeight: 'bold' }}>${finalTotal}</Text>
+                <Text style={{ fontWeight: 'bold' }}>Rs.{finalTotal}/-</Text>
               </View>
             </View>
           </View>
