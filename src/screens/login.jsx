@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   View,
   Platform,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Bar from '../components/bar';
@@ -17,6 +19,7 @@ import CustomTextInput from '../components/custom-text-input';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useSelector } from 'react-redux';
 import { logIn } from '../apis/server';
+import { Ionicons } from '@expo/vector-icons';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -24,6 +27,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -62,13 +66,18 @@ const Login = () => {
     if (valid) {
       try {
         const result = await logIn(email, password);
-        // if (result) {
-        //   navigation.reset({
-        //     index: 0,
-        //     routes: [{ name: 'Tab' }],
-        //   });
-        // }
+
         console.log(result);
+
+        if (result.loginSuccess) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Tab' }],
+          });
+        } else {
+          setAlertModalVisible(true);
+          setTimeout(() => setAlertModalVisible(false), 1000);
+        }
       } catch (error) {
         console.error('Login error:', error);
       }
@@ -83,7 +92,6 @@ const Login = () => {
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-
       console.log('Apple login success:', credential);
     } catch (error) {
       if (error.code === 'ERR_CANCELED') {
@@ -101,6 +109,9 @@ const Login = () => {
         await GoogleSignin.signOut();
         const userInfo = await GoogleSignin.signIn();
         console.log('User Info:', userInfo);
+      } else {
+        setAlertModalVisible(true);
+        setTimeout(() => setAlertModalVisible(false), 1000);
       }
     } catch (error) {
       console.error('Google Sign-In Error:', error);
@@ -214,6 +225,50 @@ const Login = () => {
             <Text style={{ paddingLeft: 10 }}>Sign in with Apple</Text>
           </TouchableOpacity>
         )}
+        <Modal
+          transparent
+          visible={alertModalVisible}
+          animationType='fade'
+          onRequestClose={() => setSuccessModalVisible(false)}
+        >
+          <Pressable
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => setAlertModalVisible(false)}
+          >
+            <View
+              style={{
+                backgroundColor: '#fff',
+                padding: 25,
+                borderRadius: 15,
+                alignItems: 'center',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 5,
+                width: '50%',
+              }}
+            >
+              <Ionicons name='close-circle' size={50} color='red' />
+
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  color: '#54408C',
+                  marginTop: 10,
+                }}
+              >
+                Login Failed!
+              </Text>
+            </View>
+          </Pressable>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );

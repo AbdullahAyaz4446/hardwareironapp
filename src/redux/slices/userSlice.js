@@ -9,6 +9,7 @@ const initialState = {
   },
   onBording: false,
   cart: [],
+  Favorites: [],
 };
 
 export const userSlice = createSlice({
@@ -24,9 +25,23 @@ export const userSlice = createSlice({
     setCart(state, action) {
       state.cart = action.payload;
     },
+    resetCart(state) {
+      state.cart = [];
+    },
+    setFavourite(state, action) {
+      state.Favorites = action.payload;
+    },
+
     reset: () => initialState,
   },
 });
 
-export const { setSignup, setOnBording, setCart, reset } = userSlice.actions;
+export const {
+  setSignup,
+  setOnBording,
+  setCart,
+  reset,
+  resetCart,
+  setFavourite,
+} = userSlice.actions;
 export default userSlice.reducer;

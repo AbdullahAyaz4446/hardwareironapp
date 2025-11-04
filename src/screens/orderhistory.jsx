@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getAllOrders } from '../apis/server';
 
 const favoritesData = [
   {
@@ -55,6 +56,10 @@ const favoritesData = [
 
 const OrderHistory = () => {
   const navigation = useNavigation();
+
+  // useEffect(() => {
+  //   const data = getAllOrders();
+  // }, []);
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>

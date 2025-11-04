@@ -40,7 +40,7 @@ const BottomTabNavigator = () => {
 
       <Tab.Screen
         name='Cart'
-        component={ConformationOrder}
+        component={Cart}
         options={{
           tabBarLabel: 'Cart',
           tabBarIcon: ({ color, size, focused }) => (

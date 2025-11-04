@@ -30,7 +30,6 @@ const MyAccount = () => {
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -74,16 +73,6 @@ const MyAccount = () => {
       valid = false;
     } else {
       setPhoneError('');
-    }
-
-    if (!password.trim()) {
-      setPasswordError('Password is required');
-      valid = false;
-    } else if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
-      valid = false;
-    } else {
-      setPasswordError('');
     }
 
     if (!valid) return;
@@ -146,16 +135,6 @@ const MyAccount = () => {
           value={phone}
           onChangeText={setPhone}
           error={phoneError}
-        />
-
-        <CustomTextInput
-          label='Password'
-          placeholder='Your password'
-          secureTextEntry={true}
-          value={password}
-          onChangeText={setPassword}
-          showEyeIcon={true}
-          error={passwordError}
         />
 
         <CustomButton

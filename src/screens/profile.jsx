@@ -13,10 +13,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import ActionSheet from 'react-native-actions-sheet';
 import CustomButton from '../components/button';
+import { useDispatch } from 'react-redux';
+import { reset } from '../redux/slices/userSlice';
 
 const Profile = () => {
   const navigation = useNavigation();
   const actionSheetRef = useRef(null);
+  const dispatch = useDispatch();
 
   const handleLogoutPress = () => {
     actionSheetRef.current?.show();
@@ -24,6 +27,7 @@ const Profile = () => {
 
   const confirmLogout = () => {
     actionSheetRef.current?.hide();
+    dispatch(reset());
     navigation.navigate('Login');
   };
 
@@ -166,7 +170,7 @@ const Profile = () => {
         </Text>
         <CustomButton
           style={{ padding: 20, fontWeight: 'bold', borderRadius: 60 }}
-          title='Login'
+          title='Logout'
           textStyle={{ fontWeight: 'bold' }}
           onPress={confirmLogout}
         />

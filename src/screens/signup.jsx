@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import {
+  Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,33 +11,108 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
 import TopBar from '../components/topBar';
 import { setSignup } from '../redux/slices/userSlice';
+import { register } from '../apis/server';
 
 const Signup = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState({
+    icon: 'close-circle',
+    color: 'red',
+    message: '',
+  });
 
-  const submitData = () => {
+  // const submitData = async () => {
+  //   let valid = true;
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   const phoneRegex = /^[0-9]{11}$/;
+  //   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
+
+  //   if (!name.trim()) {
+  //     setNameError('Name is required');
+  //     valid = false;
+  //   } else setNameError('');
+
+  //   if (!email.trim()) {
+  //     setEmailError('Email is required');
+  //     valid = false;
+  //   } else if (!emailRegex.test(email)) {
+  //     setEmailError('Please enter a valid email');
+  //     valid = false;
+  //   } else setEmailError('');
+
+  //   if (!phoneNumber.trim()) {
+  //     setPhoneError('Phone number is required');
+  //     valid = false;
+  //   } else if (!phoneRegex.test(phoneNumber)) {
+  //     setPhoneError('Please enter a valid 11-digit phone number');
+  //     valid = false;
+  //   } else setPhoneError('');
+
+  //   if (!password.trim()) {
+  //     setPasswordError('Password is required');
+  //     valid = false;
+  //   } else if (!passwordRegex.test(password)) {
+  //     setPasswordError(
+  //       'Password must be at least 6 characters and include both letters and numbers'
+  //     );
+  //     valid = false;
+  //   } else {
+  //     setPasswordError('');
+  //   }
+
+  //   if (!valid) return;
+
+  //   const checkRegiisteration = await register(
+  //     name,
+  //     email,
+  //     password,
+  //     phoneNumber,
+  //     null
+  //   );
+
+  //   console.log(checkRegiisteration);
+  //   if (!checkRegiisteration.registrationSuccess) {
+  //     setAlertModalVisible(true);
+  //     setTimeout(() => setAlertModalVisible(false), 1000);
+  //   }
+  //   else{
+  //          setAlertModalVisible(true);
+  //   }
+
+  //   // dispatch(
+  //   //   setSignup({
+  //   //     name,
+  //   //     email,
+  //   //     phone: phoneNumber,
+  //   //     password,
+  //   //   })
+  //   // );
+  //   // navigation.navigate('OtpVerificationOption');
+  // };
+
+  const submitData = async () => {
     let valid = true;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^[0-9]{11}$/;
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
 
+    // validation checks
     if (!name.trim()) {
       setNameError('Name is required');
       valid = false;
@@ -65,23 +142,42 @@ const Signup = () => {
         'Password must be at least 6 characters and include both letters and numbers'
       );
       valid = false;
-    } else {
-      setPasswordError('');
-    }
+    } else setPasswordError('');
 
     if (!valid) return;
 
-    dispatch(
-      setSignup({
-        name,
-        email,
-        phone: phoneNumber,
-        password,
-      })
+    // call API
+    const checkRegiisteration = await register(
+      name,
+      email,
+      password,
+      phoneNumber,
+      null
     );
-    navigation.navigate('OtpVerificationOption');
-  };
 
+    console.log(checkRegiisteration);
+
+    if (!checkRegiisteration.registrationSuccess) {
+      setModalContent({
+        icon: 'close-circle',
+        color: 'red',
+        message: 'Registration Failed!',
+      });
+      setAlertModalVisible(true);
+      setTimeout(() => setAlertModalVisible(false), 1500);
+    } else {
+      setModalContent({
+        icon: 'checkmark-circle',
+        color: 'green',
+        message: 'Registration Successful!',
+      });
+      setAlertModalVisible(true);
+      setTimeout(() => {
+        setAlertModalVisible(false);
+        navigation.navigate('Login');
+      }, 1500);
+    }
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       <TopBar onPress={() => navigation.goBack()} />
@@ -180,6 +276,55 @@ const Signup = () => {
         >
           Terms and Data Policy.
         </Text>
+
+        <Modal
+          transparent
+          visible={alertModalVisible}
+          animationType='fade'
+          onRequestClose={() => setAlertModalVisible(false)}
+        >
+          <Pressable
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => setAlertModalVisible(false)}
+          >
+            <View
+              style={{
+                backgroundColor: '#fff',
+                padding: 25,
+                borderRadius: 15,
+                alignItems: 'center',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 5,
+                width: '60%',
+              }}
+            >
+              <Ionicons
+                name={modalContent.icon}
+                size={50}
+                color={modalContent.color}
+              />
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  color: '#54408C',
+                  marginTop: 10,
+                  textAlign: 'center',
+                }}
+              >
+                {modalContent.message}
+              </Text>
+            </View>
+          </Pressable>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );

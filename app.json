@@ -30,18 +30,6 @@
     },
     "plugins": [
       [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
-        }
-      ],
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps.231880254904-eqockiv0cslohtuopuq6qaon4oqh6ga9"
-        }
-      ],
-      [
         "expo-apple-authentication"
       ]
     ],

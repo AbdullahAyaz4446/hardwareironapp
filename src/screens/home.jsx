@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   Image,
+  Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,7 +24,9 @@ import ProductDetailsSheet from '../components/activeSheet';
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
 import ScrollViewHorizontal from '../components/scrollbar-horixental';
-import { allCategory } from '../apis/server';
+import { allCategory, baseUrl } from '../apis/server';
+import { FlashList } from '@shopify/flash-list';
+import Category from './category';
 
 const { width } = Dimensions.get('window');
 
@@ -31,7 +35,6 @@ const data = [
   { id: 2, image: require('../../assets/slider2.png') },
   { id: 3, image: require('../../assets/slider3.png') },
 ];
-
 const initialImages = [
   {
     id: '1',
@@ -69,15 +72,20 @@ const initialImages = [
 
 const Home = () => {
   const navigation = useNavigation();
-  const actionSheetRef = useRef(null);
-  const ref = useRef(null);
+  const carouselRef = useRef(null);
   const progress = useSharedValue(0);
   const searchHeight = useSharedValue(0);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [popularImages, setPopularImages] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const actionSheetRef = useRef(null);
+  const ref = useRef(null);
 
   const getAllCategories = async () => {
     const data = await allCategory();
+    console.log(data);
     setPopularImages(data);
   };
 
@@ -96,36 +104,65 @@ const Home = () => {
     }),
   }));
 
-  const openModal = (item) => {
-    setSelectedProduct(item);
-    actionSheetRef.current?.setModalVisible(true);
-  };
-
   const onPressPagination = (index) => {
     if (carouselRef.current) {
       carouselRef.current.scrollTo({ count: index, animated: true });
     }
   };
+
   const toggleSearch = () => {
     searchHeight.value = searchHeight.value === 0 ? 60 : 0;
   };
 
+  const filteredCategories = popularImages.filter((item) =>
+    item.name?.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getAllCategories();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  };
+  const openModal = (item) => {
+    setSelectedProduct(item);
+    actionSheetRef.current?.setModalVisible(true);
+  };
+
+  const showList = ({ item }) => {
+    return (
+      <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Products', { categoryId: item.id });
+          }}
+          style={{ width: '90%', margin: 10 }}
+        >
+          <Image
+            source={{ uri: baseUrl + '/' + item.image }}
+            style={styles.bookImage}
+          />
+          <Text style={styles.bookTitle}>{item.name}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingVertical: 20 }}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={toggleSearch}>
-            <Ionicons name='search' size={25} color='black' />
-          </TouchableOpacity>
-          <Text style={styles.title}>Home</Text>
-          <TouchableOpacity>
-            <View style={{ position: 'relative' }}>
-              <Ionicons name='notifications-outline' size={25} color='black' />
-              <View style={styles.redDot} />
-            </View>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={toggleSearch}>
+          <Ionicons name='search' size={25} color='black' />
+        </TouchableOpacity>
 
+        <Text style={styles.title}>Home</Text>
+
+        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+          <Ionicons name='ellipsis-horizontal' size={25} color='black' />
+        </TouchableOpacity>
+      </View>
+      <ScrollView>
         <Animated.View
           style={[
             {
@@ -136,11 +173,14 @@ const Home = () => {
             animatedStyle,
           ]}
         >
-          <CustomTextInput placeholder='Search...' />
+          <CustomTextInput
+            placeholder='Search...'
+            onChangeText={setSearchText}
+          />
         </Animated.View>
 
         <Carousel
-          ref={ref}
+          ref={carouselRef}
           width={width}
           height={width / 2}
           data={data}
@@ -163,6 +203,9 @@ const Home = () => {
                 <CustomButton
                   style={{ width: '55%', padding: 10, borderRadius: 20 }}
                   title='Order Now'
+                  onPress={() => {
+                    navigation.navigate('Products');
+                  }}
                 />
               </View>
               <View style={{ width: '60%' }}>
@@ -189,19 +232,10 @@ const Home = () => {
           onPress={onPressPagination}
         />
 
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginTop: 20,
-            paddingHorizontal: 20,
-          }}
-        >
-          Top 5 products of Week
-        </Text>
+        <Text style={styles.sectionTitle}>Top 5 products of Week</Text>
 
         <ScrollViewHorizontal
-          data={initialImages}
+          data={searchText ? filteredProducts : initialImages}
           containerStyle={{ marginTop: 10 }}
           imageStyle={{ borderRadius: 15 }}
           titleStyle={{ color: 'black', fontWeight: 'bold' }}
@@ -209,40 +243,58 @@ const Home = () => {
           onPress={(item) => openModal(item)}
         />
 
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 20,
-            paddingTop: 20,
-          }}
-        >
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Category</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Category')}>
-            <Text
-              style={{ fontSize: 18, fontWeight: 'bold', color: '#54408C' }}
-            >
-              See all
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <ScrollViewHorizontal
-          data={popularImages.slice(0, 4)}
-          containerStyle={{ marginTop: 10 }}
-          imageStyle={{
-            width: width / 3,
-            height: width / 3,
-            borderRadius: 100,
-          }}
-          titleStyle={{ color: 'black', fontWeight: 'bold' }}
-          priceStyle={{ color: '#A6A6A6', fontSize: 12, fontWeight: 'bold' }}
+        <ProductDetailsSheet
+          ref={actionSheetRef}
+          selectedProduct={selectedProduct}
         />
+        <Text style={styles.sectionTitle}>Categorys</Text>
+        <FlashList
+          data={filteredCategories}
+          numColumns={2}
+          renderItem={showList}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+          }}
+        />
+
+        <Modal
+          transparent
+          visible={modalVisible}
+          animationType='fade'
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <Pressable
+            style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.1)' }}
+            onPress={() => setModalVisible(false)}
+          >
+            <Pressable style={styles.dropdown} onPress={() => {}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false);
+                }}
+              >
+                <Text style={styles.dropdownItem}>Messages</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false);
+                }}
+              >
+                <Text style={styles.dropdownItem}>Need Help?</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false);
+                }}
+              >
+                <Text style={styles.dropdownItem}>Feedback</Text>
+              </TouchableOpacity>
+            </Pressable>
+          </Pressable>
+        </Modal>
       </ScrollView>
-      <ProductDetailsSheet
-        ref={actionSheetRef}
-        selectedProduct={selectedProduct}
-      />
     </SafeAreaView>
   );
 };
@@ -256,17 +308,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingBottom: 20,
+    paddingVertical: 20,
   },
   title: { fontWeight: 'bold', fontSize: 20 },
-  redDot: {
-    position: 'absolute',
-    right: 2,
-    top: 2,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'red',
-  },
   slide: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -280,5 +324,49 @@ const styles = StyleSheet.create({
     height: '100%',
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 80,
+    right: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: 160,
+  },
+  dropdownItem: {
+    paddingVertical: 8,
+    fontSize: 18,
+  },
+  bookImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: 10,
+    resizeMode: 'cover',
+    padding: 2,
+  },
+  bookTitle: {
+    marginTop: 10,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#000',
   },
 });

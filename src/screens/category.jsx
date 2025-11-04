@@ -22,77 +22,13 @@ import CustomTextInput from '../components/custom-text-input';
 import { FlashList } from '@shopify/flash-list';
 import { allCategory, baseUrl } from '../apis/server';
 
-const { width } = Dimensions.get('window');
-
-const tags = [
-  { id: 1, tag: 'All' },
-  { id: 2, tag: 'Novels' },
-  { id: 3, tag: 'Self Love' },
-  { id: 4, tag: 'Science' },
-  { id: 5, tag: 'Romantic' },
-  { id: 6, tag: 'Angry' },
-];
-
-const initialImages = [
-  {
-    id: '1',
-    image: require('../../assets/slider1.png'),
-    title: 'The Kite Runner',
-  },
-  {
-    id: '2',
-    image: require('../../assets/slider1.png'),
-    title: 'Atomic Habits',
-  },
-  {
-    id: '3',
-    image: require('../../assets/slider1.png'),
-    title: 'Rich Dad Poor Dad',
-  },
-  {
-    id: '4',
-    image: require('../../assets/slider1.png'),
-    title: 'Ikigai',
-  },
-  {
-    id: '5',
-    image: require('../../assets/slider1.png'),
-    title: 'Ikigai',
-  },
-  {
-    id: '6',
-    image: require('../../assets/slider1.png'),
-    title: 'Ikigai',
-    price: '$10.99',
-  },
-  {
-    id: '7',
-    image: require('../../assets/slider1.png'),
-    title: 'Ikigai',
-  },
-  {
-    id: '8',
-    image: require('../../assets/slider1.png'),
-    title: 'Ikigai',
-  },
-  {
-    id: '9',
-    image: require('../../assets/slider1.png'),
-    title: 'Ikigai',
-  },
-  {
-    id: '10',
-    image: require('../../assets/slider1.png'),
-    title: 'Ikigai last',
-  },
-];
-
 const Category = () => {
   const navigation = useNavigation();
   const searchHeight = useSharedValue(0);
   const [selectedTag, setSelectedTag] = useState('All');
   const [refreshing, setRefreshing] = useState(false);
   const [popularImages, setPopularImages] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
   const getAllCategories = async () => {
     const data = await allCategory();
@@ -102,6 +38,10 @@ const Category = () => {
   useEffect(() => {
     getAllCategories();
   }, []);
+
+  const filteredCategories = popularImages.filter((item) =>
+    item.name?.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: withTiming(searchHeight.value, {
@@ -122,8 +62,9 @@ const Category = () => {
     setSelectedTag(tag);
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
+    await getAllCategories();
     setTimeout(() => {
       setRefreshing(false);
     }, 1500);
@@ -172,44 +113,16 @@ const Category = () => {
           animatedStyle,
         ]}
       >
-        <CustomTextInput placeholder='Search...' />
+        <CustomTextInput placeholder='Search...' onChangeText={setSearchText} />
       </Animated.View>
 
       <FlashList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        estimatedItemSize={80}
-        data={tags}
-        contentContainerStyle={{
-          height: 50,
-          alignItems: 'center',
-          paddingHorizontal: 10,
-        }}
-        renderItem={({ item }) => {
-          const isSelected = selectedTag === item.tag;
-          return (
-            <TouchableOpacity
-              style={{
-                paddingHorizontal: 15,
-              }}
-              onPress={() => handleTagPress(item.tag)}
-            >
-              <Text
-                style={{
-                  paddingVertical: 10,
-                  fontSize: 16,
-                  color: isSelected ? 'black' : 'gray',
-                  fontWeight: isSelected ? 'bold' : '500',
-                }}
-              >
-                {item.tag}
-              </Text>
-            </TouchableOpacity>
-          );
-        }}
+        data={filteredCategories}
+        numColumns={2}
+        renderItem={showList}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
       />
-
-      <FlashList data={popularImages} numColumns={2} renderItem={showList} />
     </SafeAreaView>
   );
 };

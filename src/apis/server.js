@@ -31,7 +31,7 @@ export const productById = async (id) => {
     const responce = await fetch(`${baseUrl}/Products/Index/${id}`);
     if (responce.ok) {
       var data = await responce.json();
-
+      console.log(data);
       return data;
     }
     console.error(responce.json());
@@ -45,7 +45,6 @@ export const getProductDeatilesById = async (id) => {
     const responce = await fetch(`${baseUrl}/Products/Details/${id}`);
     if (responce.ok) {
       var data = await responce.json();
-
       return data;
     }
     console.error(responce.json());
@@ -59,7 +58,7 @@ export const getAllOrders = async () => {
     const responce = await fetch(`${baseUrl}/Orders`);
     if (responce.ok) {
       var data = await responce.json();
-
+      console.log(data);
       return data;
     }
     console.error(responce.json());
@@ -108,22 +107,44 @@ export const createOrder = async (order) => {
 
 export const logIn = async (Email, Password) => {
   try {
-    const response = await fetch(`${baseUrl}/Identity/Account/Login`, {
+    const requestOptions = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        Email,
-        Password,
-        RememberMe: false,
-      }),
-    });
+      redirect: 'follow',
+    };
 
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
+    const response = await fetch(
+      `${baseUrl}/Account/Login?Email=${Email}&Password=${Password}`,
+      requestOptions
+    );
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error('Error during login:', error);
+  }
+};
+
+export const register = async (
+  fullName,
+  Email,
+  Password,
+  phoneNumber,
+  file
+) => {
+  try {
+    const requestOptions = {
+      method: 'POST',
+
+      redirect: 'follow',
+    };
+
+    const responce = await fetch(
+      `${baseUrl}/Account/Register?Fullname=${fullName}&Email=${Email}&Phone=${phoneNumber}&Password=${Password}&ConfirmPassword=${Password}&file=${file}`,
+      requestOptions
+    );
+    const data = await responce.json();
+    return data;
   } catch (error) {
     console.error('Error during login:', error);
   }
