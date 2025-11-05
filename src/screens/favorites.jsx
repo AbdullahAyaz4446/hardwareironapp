@@ -79,15 +79,22 @@ const Favorites = () => {
         <Text style={styles.headerTitle}>Favorites</Text>
         <View style={{ width: 28 }} />
       </View>
+      {fvrtData.length == 0 ? (
+        <View style={styles.emptyCartContainer}>
+          <Ionicons name='heart-dislike-outline' size={100} color='#C4C4C4' />
+          <Text style={styles.emptyCartText}>No Favorites items here</Text>
+        </View>
+      ) : (
+        <FlashList
+          data={fvrtData}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 10 }}
+          estimatedItemSize={100}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
-      <FlashList
-        data={fvrtData}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 10 }}
-        estimatedItemSize={100}
-        showsVerticalScrollIndicator={false}
-      />
       <ProductDetailsSheet
         ref={actionSheetRef}
         selectedProduct={selectedProduct}
@@ -139,5 +146,16 @@ const styles = StyleSheet.create({
   },
   heartIcon: {
     padding: 5,
+  },
+  emptyCartContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyCartText: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#A6A6A6',
   },
 });

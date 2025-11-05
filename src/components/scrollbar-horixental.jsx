@@ -38,7 +38,7 @@ const ScrollViewHorizontal = ({
             resizeMode='cover'
           />
 
-          {item.title ? (
+          {item.name ? (
             <Text style={[styles.title, titleStyle]} numberOfLines={1}>
               {item.name}
             </Text>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   image: {
     width: width / 3,
     height: width / 2.5,
-    borderRadius: 20,
+    borderRadius: 100,
   },
   title: {
     fontWeight: 'bold',

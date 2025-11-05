@@ -146,16 +146,13 @@ const Signup = () => {
 
     if (!valid) return;
 
-    // call API
     const checkRegiisteration = await register(
-      name,
-      email,
-      password,
+      name.toLocaleLowerCase(),
+      email.toLocaleLowerCase(),
+      password.toLocaleLowerCase(),
       phoneNumber,
       null
     );
-
-    console.log(checkRegiisteration);
 
     if (!checkRegiisteration.registrationSuccess) {
       setModalContent({

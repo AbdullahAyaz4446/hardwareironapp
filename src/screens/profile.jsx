@@ -13,13 +13,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import ActionSheet from 'react-native-actions-sheet';
 import CustomButton from '../components/button';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { reset } from '../redux/slices/userSlice';
+import { baseUrl } from '../apis/server';
 
 const Profile = () => {
   const navigation = useNavigation();
   const actionSheetRef = useRef(null);
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
 
   const handleLogoutPress = () => {
     actionSheetRef.current?.show();
@@ -59,14 +61,18 @@ const Profile = () => {
           >
             <TouchableOpacity
               style={{
-                width: Dimensions.get('screen').width / 7,
-                height: Dimensions.get('screen').width / 7,
+                width: 80,
+                height: 80,
                 borderRadius: 50,
                 marginRight: 10,
               }}
             >
               <Image
-                source={require('../../assets/accountImage.png')}
+                source={
+                  user.image == 'N/A'
+                    ? require('../../assets/man.png')
+                    : { uri: baseUrl + user.image }
+                }
                 style={{
                   width: '100%',
                   height: '100%',
@@ -77,8 +83,8 @@ const Profile = () => {
             </TouchableOpacity>
 
             <View>
-              <Text>Abdullah</Text>
-              <Text>(+1) 234 567 890</Text>
+              <Text>{user.fullname}</Text>
+              <Text>{user.phoneNumber}</Text>
             </View>
           </View>
 

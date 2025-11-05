@@ -17,9 +17,11 @@ import Bar from '../components/bar';
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logIn } from '../apis/server';
 import { Ionicons } from '@expo/vector-icons';
+import { setSignup } from '../redux/slices/userSlice';
+import dummyPic from '../../assets/man.png';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -29,13 +31,15 @@ const Login = () => {
   const [passwordError, setPasswordError] = useState('');
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const user = useSelector((state) => state.user);
+  const [loader, setLoader] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (
-      user.user.email == 'Abdullahayaz131@gmail.com' &&
-      user.user.password == 'Abdullah4446'
-    ) {
-      navigation.navigate('Tab');
+    if (user?.user && user?.user?.email) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Tab' }],
+      });
     }
   }, [user]);
 
@@ -65,11 +69,10 @@ const Login = () => {
 
     if (valid) {
       try {
-        const result = await logIn(email, password);
-
-        console.log(result);
-
+        setLoader(true);
+        const result = await logIn(email.toLowerCase(), password);
         if (result.loginSuccess) {
+          dispatch(setSignup(result.user));
           navigation.reset({
             index: 0,
             routes: [{ name: 'Tab' }],
@@ -80,6 +83,8 @@ const Login = () => {
         }
       } catch (error) {
         console.error('Login error:', error);
+      } finally {
+        setLoader(false);
       }
     }
   };
@@ -173,7 +178,7 @@ const Login = () => {
 
         <CustomButton
           style={{ padding: 20, fontWeight: 'bold', borderRadius: 60 }}
-          title='Login'
+          title={loader ? 'Logining....' : 'Login'}
           textStyle={{ fontWeight: 'bold' }}
           onPress={handleLogin}
         />

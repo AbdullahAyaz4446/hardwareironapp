@@ -1,12 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  user: {
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-  },
+  user: {},
   onBording: false,
   cart: [],
   Favorites: [],

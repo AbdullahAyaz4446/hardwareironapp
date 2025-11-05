@@ -44,8 +44,6 @@ const Products = ({ route }) => {
 
   const handleTagPress = (tag) => {
     if (tag.name === 'All') {
-      console.log('hello');
-
       setSelectedTag(tag.name);
 
       getAllProducts();
@@ -90,7 +88,7 @@ const Products = ({ route }) => {
     actionSheetRef.current?.show();
   };
 
-  const getAllProducts = async (id = categoryId) => {
+  const getAllProducts = async (id) => {
     const data = await productById(id);
     setProducts(data);
   };
@@ -102,16 +100,15 @@ const Products = ({ route }) => {
   };
 
   useEffect(() => {
-    if (!categoryId) {
+    if (categoryId) {
+      getAllProducts(categoryId);
+    } else {
       getAllCategories();
+      getAllProducts('0');
     }
-
-    getAllProducts('0');
-  }, []);
+  }, [categoryId]);
 
   const renderTag = ({ item }) => {
-    console.log(selectedTag);
-
     const isSelected = selectedTag === item.name;
 
     return (

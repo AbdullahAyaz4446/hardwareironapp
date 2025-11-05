@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
   ScrollView,
@@ -15,14 +15,16 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import CustomTextInput from '../components/custom-text-input';
 import CustomButton from '../components/button';
+import { useSelector } from 'react-redux';
+import { baseUrl } from '../apis/server';
 
 const MyAccount = () => {
   const navigation = useNavigation();
+  const user = useSelector((state) => state.user.user);
 
-  const [name, setName] = useState('Abdullah Ayaz');
-  const [email, setEmail] = useState('abdullahayaz@example.com');
-  const [phone, setPhone] = useState('+92 300 1234567');
-  const [password, setPassword] = useState('abdullah4446');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [profileImage, setProfileImage] = useState(
     require('../../assets/accountImage.png')
   );
@@ -30,6 +32,17 @@ const MyAccount = () => {
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setName(user.fullname || '');
+      setEmail(user.email || '');
+      setPhone(user.phoneNumber || '');
+      if (user.image && typeof user.image === 'string') {
+        setProfileImage({ uri: user.image });
+      }
+    }
+  }, [user]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -102,14 +115,23 @@ const MyAccount = () => {
           <View style={{ width: 24 }} />
         </View>
 
-        <View style={styles.profileContainer}>
-          <Image
-            source={profileImage}
-            style={styles.profileImage}
-            resizeMode='cover'
-          />
-          <TouchableOpacity onPress={pickImage}>
-            <Text style={styles.changeImage}>Change Image</Text>
+        <View style={styles.profileSection}>
+          <View style={styles.profileImageContainer}>
+            <Image
+              source={
+                user.image == 'N/A'
+                  ? require('../../assets/man.png')
+                  : { uri: baseUrl + user.image }
+              }
+              style={styles.profileImage}
+              resizeMode='cover'
+            />
+          </View>
+          <TouchableOpacity
+            onPress={pickImage}
+            style={styles.changeImageButton}
+          >
+            <Text style={styles.changeImageText}>Change Image</Text>
           </TouchableOpacity>
         </View>
 
@@ -163,17 +185,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     flex: 1,
   },
-  profileContainer: {
+  profileSection: {
     alignItems: 'center',
-    marginTop: 20,
+    marginBottom: 30,
+  },
+  profileImageContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: 'hidden',
+    marginBottom: 15,
+    alignSelf: 'center',
   },
   profileImage: {
-    width: Dimensions.get('screen').width / 3,
-    height: Dimensions.get('screen').width / 3,
-    borderRadius: Dimensions.get('screen').width / 6,
+    width: '100%',
+    height: '100%',
   },
-  changeImage: {
-    marginTop: 15,
+  changeImageButton: {
+    alignSelf: 'center',
+  },
+  changeImageText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#54408C',

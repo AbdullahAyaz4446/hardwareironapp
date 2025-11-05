@@ -28,7 +28,7 @@ import HelpCenter from '../screens/help-center';
 import OrderRecevingRating from '../screens/order-recevinig-rating';
 import OrderHistory from '../screens/orderhistory';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import OrderDetailes from '../screens/orderdetailes';
 
 const StackNavigation = () => {
   const Stack = createNativeStackNavigator();
@@ -76,6 +76,7 @@ const StackNavigation = () => {
         <Stack.Screen name='LocationDetailes' component={LocationDetailes} />
         <Stack.Screen name='Favorites' component={Favorites} />
         <Stack.Screen name='HelpCenter' component={HelpCenter} />
+        <Stack.Screen name='OrderDetailes' component={OrderDetailes} />
         <Stack.Screen
           name='OrderRecevingRating'
           component={OrderRecevingRating}

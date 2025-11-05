@@ -16,7 +16,6 @@ import CustomButton from './button';
 import { baseUrl } from '../apis/server';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCart, setFavourite } from '../redux/slices/userSlice';
-import { ActivityIndicator } from 'react-native';
 
 const ProductDetailsSheet = forwardRef(({ selectedProduct }, ref) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -94,17 +93,11 @@ const ProductDetailsSheet = forwardRef(({ selectedProduct }, ref) => {
       containerStyle={{
         padding: 20,
         backgroundColor: '#F5F5F5',
-        flexGrow: 1,
+        flex: 1,
       }}
     >
       {selectedProduct && (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingBottom: 40,
-          }}
-        >
+        <>
           <Image
             source={{ uri: baseUrl + '/' + selectedProduct.image }}
             style={{
@@ -114,7 +107,6 @@ const ProductDetailsSheet = forwardRef(({ selectedProduct }, ref) => {
             }}
             resizeMode='contain'
           />
-
           <View
             style={{
               flexDirection: 'row',
@@ -135,214 +127,224 @@ const ProductDetailsSheet = forwardRef(({ selectedProduct }, ref) => {
               />
             </TouchableOpacity>
           </View>
-
-          <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 6 }}>
-            Product Description
-          </Text>
-          <Text
+          <ScrollView
+            showsVerticalScrollIndicator={false}
             style={{
-              color: '#555',
-              fontSize: 14,
-              lineHeight: 20,
-              marginBottom: 12,
+              flex: 1,
+            }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingBottom: 40,
             }}
           >
-            {selectedProduct.description}
-          </Text>
-
-          <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 6 }}>
-            Benefits
-          </Text>
-          <View style={{ marginLeft: 10, marginBottom: 12 }}>
-            {[
-              'Provides strong structural stability for RCC construction',
-              'Handles heavy concrete weight without bending or cracking',
-              'Rust & weather-resistant for long-term durability',
-              'Ribbed surface gives better grip with concrete (no slippage)',
-              'Long-lasting material reduces maintenance & replacement cost',
-              'Suitable for homes, commercial buildings & general construction',
-            ].map((item, index) => (
-              <View
-                key={index}
-                style={{ flexDirection: 'row', marginBottom: 5 }}
-              >
-                <Ionicons
-                  name='checkmark-circle-outline'
-                  size={18}
-                  color='#4CAF50'
-                  style={{ marginRight: 8, marginTop: 2 }}
-                />
-                <Text style={{ color: '#555', fontSize: 14, flex: 1 }}>
-                  {item}
-                </Text>
-              </View>
-            ))}
-          </View>
-
-          <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 6 }}>
-            Product Details
-          </Text>
-          <View style={{ marginLeft: 10, marginBottom: 12 }}>
-            <Text style={{ color: '#555', fontSize: 14 }}>
-              <Text style={{ fontWeight: 'bold' }}>Material:</Text> Premium
-              Carbon Steel{'\n'}
-              <Text style={{ fontWeight: 'bold' }}>Grade:</Text> High Tensile
-              Strength{'\n'}
-              <Text style={{ fontWeight: 'bold' }}>Surface Type:</Text> Ribbed
-              for better concrete grip
+            <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 6 }}>
+              Product Description
             </Text>
-          </View>
-
-          <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 6 }}>
-            More Details
-          </Text>
-          <View style={{ marginLeft: 10, marginBottom: 20 }}>
-            <Text style={{ color: '#555', fontSize: 14 }}>
-              <Text style={{ fontWeight: 'bold' }}>Usage:</Text> RCC
-              Construction (Beams, Columns, Slabs, Foundations){'\n'}
-              <Text style={{ fontWeight: 'bold' }}>Available Sizes:</Text> 8mm /
-              10mm / 12mm / 16mm / 20mm{'\n'}
-              <Text style={{ fontWeight: 'bold' }}>Finish:</Text> Steel Grey
-              Industrial Finish{'\n'}
-              <Text style={{ fontWeight: 'bold' }}>Durability:</Text> Long Life,
-              Corrosion Resistant{'\n'}
-              <Text style={{ fontWeight: 'bold' }}>Application:</Text>{' '}
-              Residential, Commercial & Industrial Projects
+            <Text
+              style={{
+                color: '#555',
+                fontSize: 14,
+                lineHeight: 20,
+                marginBottom: 12,
+              }}
+            >
+              {selectedProduct.description}
             </Text>
-          </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: 10,
-            }}
-          >
-            <Ionicons
-              name='shield-checkmark-outline'
-              size={20}
-              color='#4CAF50'
-              style={{ marginRight: 6 }}
-            />
-            <Text style={{ color: '#A6A6A6', paddingVertical: 10 }}>
-              10 days easy return
+            <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 6 }}>
+              Benefits
             </Text>
-          </View>
+            <View style={{ marginLeft: 10, marginBottom: 12 }}>
+              {/* {[
+                'Provides strong structural stability for RCC construction',
+                'Handles heavy concrete weight without bending or cracking',
+                'Rust & weather-resistant for long-term durability',
+                'Ribbed surface gives better grip with concrete (no slippage)',
+                'Long-lasting material reduces maintenance & replacement cost',
+                'Suitable for homes, commercial buildings & general construction',
+              ].map((item, index) => (
+                <View
+                  key={index}
+                  style={{ flexDirection: 'row', marginBottom: 5 }}
+                >
+                  <Ionicons
+                    name='checkmark-circle-outline'
+                    size={18}
+                    color='#4CAF50'
+                    style={{ marginRight: 8, marginTop: 2 }}
+                  />
+                  <Text style={{ color: '#555', fontSize: 14, flex: 1 }}>
+                    {item}
+                  </Text>
+                </View>
+              ))} */}
+            </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              marginBottom: 20,
-              alignItems: 'center',
-            }}
-          >
+            <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 6 }}>
+              Product Details
+            </Text>
+            <View style={{ marginLeft: 10, marginBottom: 12 }}>
+              <Text style={{ color: '#555', fontSize: 14 }}>
+                <Text style={{ fontWeight: 'bold' }}>Material:</Text> Premium
+                Carbon Steel{'\n'}
+                <Text style={{ fontWeight: 'bold' }}>Grade:</Text> High Tensile
+                Strength{'\n'}
+                <Text style={{ fontWeight: 'bold' }}>Surface Type:</Text> Ribbed
+                for better concrete grip
+              </Text>
+            </View>
+
+            <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 6 }}>
+              More Details
+            </Text>
+            <View style={{ marginLeft: 10, marginBottom: 20 }}>
+              <Text style={{ color: '#555', fontSize: 14 }}>
+                <Text style={{ fontWeight: 'bold' }}>Usage:</Text> RCC
+                Construction (Beams, Columns, Slabs, Foundations){'\n'}
+                <Text style={{ fontWeight: 'bold' }}>Available Sizes:</Text> 8mm
+                / 10mm / 12mm / 16mm / 20mm{'\n'}
+                <Text style={{ fontWeight: 'bold' }}>Finish:</Text> Steel Grey
+                Industrial Finish{'\n'}
+                <Text style={{ fontWeight: 'bold' }}>Durability:</Text> Long
+                Life, Corrosion Resistant{'\n'}
+                <Text style={{ fontWeight: 'bold' }}>Application:</Text>{' '}
+                Residential, Commercial & Industrial Projects
+              </Text>
+            </View>
+
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#FAFAFA',
-                borderRadius: 10,
-                paddingHorizontal: 5,
-                marginRight: 10,
+                marginBottom: 10,
               }}
             >
-              <TouchableOpacity
-                onPress={decrement}
-                style={{
-                  backgroundColor:
-                    lastPressed === 'decrement' && quantity > 1
-                      ? '#54408C'
-                      : '#ccc',
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginRight: 10,
-                }}
-              >
-                <Text
-                  style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}
-                >
-                  -
-                </Text>
-              </TouchableOpacity>
-
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                {quantity}
+              <Ionicons
+                name='shield-checkmark-outline'
+                size={20}
+                color='#4CAF50'
+                style={{ marginRight: 6 }}
+              />
+              <Text style={{ color: '#A6A6A6', paddingVertical: 10 }}>
+                10 days easy return
               </Text>
-
-              <TouchableOpacity
-                onPress={increment}
-                style={{
-                  backgroundColor:
-                    lastPressed === 'increment' ? '#54408C' : '#ccc',
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginLeft: 10,
-                }}
-              >
-                <Text
-                  style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}
-                >
-                  +
-                </Text>
-              </TouchableOpacity>
             </View>
 
-            <Text
-              style={{ fontWeight: 'bold', fontSize: 16, color: '#54408C' }}
-            >
-              {(selectedProduct.price * quantity).toFixed(2)}
-            </Text>
-          </View>
-
-          <Modal
-            transparent
-            visible={successModalVisible}
-            animationType='fade'
-            onRequestClose={() => setSuccessModalVisible(false)}
-          >
-            <Pressable
+            <View
               style={{
-                flex: 1,
-                backgroundColor: 'rgba(0,0,0,0.3)',
-                justifyContent: 'center',
+                flexDirection: 'row',
+                marginBottom: 20,
                 alignItems: 'center',
               }}
-              onPress={() => setSuccessModalVisible(false)}
             >
               <View
                 style={{
-                  backgroundColor: '#fff',
-                  padding: 25,
-                  borderRadius: 15,
+                  flexDirection: 'row',
                   alignItems: 'center',
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 4,
-                  elevation: 5,
+                  backgroundColor: '#FAFAFA',
+                  borderRadius: 10,
+                  paddingHorizontal: 5,
+                  marginRight: 10,
                 }}
               >
-                <Ionicons name='checkmark-circle' size={50} color='#54408C' />
-                <Text
+                <TouchableOpacity
+                  onPress={decrement}
                   style={{
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                    color: '#54408C',
-                    marginTop: 10,
+                    backgroundColor:
+                      lastPressed === 'decrement' && quantity > 1
+                        ? '#54408C'
+                        : '#ccc',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginRight: 10,
                   }}
                 >
-                  Product added successfully!
+                  <Text
+                    style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}
+                  >
+                    -
+                  </Text>
+                </TouchableOpacity>
+
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+                  {quantity}
                 </Text>
+
+                <TouchableOpacity
+                  onPress={increment}
+                  style={{
+                    backgroundColor:
+                      lastPressed === 'increment' ? '#54408C' : '#ccc',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginLeft: 10,
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}
+                  >
+                    +
+                  </Text>
+                </TouchableOpacity>
               </View>
-            </Pressable>
-          </Modal>
-        </ScrollView>
+
+              <Text
+                style={{ fontWeight: 'bold', fontSize: 16, color: '#54408C' }}
+              >
+                {(selectedProduct.price * quantity).toFixed(2)}
+              </Text>
+            </View>
+
+            <Modal
+              transparent
+              visible={successModalVisible}
+              animationType='fade'
+              onRequestClose={() => setSuccessModalVisible(false)}
+            >
+              <Pressable
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgba(0,0,0,0.3)',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={() => setSuccessModalVisible(false)}
+              >
+                <View
+                  style={{
+                    backgroundColor: '#fff',
+                    padding: 25,
+                    borderRadius: 15,
+                    alignItems: 'center',
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4,
+                    elevation: 5,
+                  }}
+                >
+                  <Ionicons name='checkmark-circle' size={50} color='#54408C' />
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      color: '#54408C',
+                      marginTop: 10,
+                    }}
+                  >
+                    Product added successfully!
+                  </Text>
+                </View>
+              </Pressable>
+            </Modal>
+          </ScrollView>
+        </>
       )}
 
       <CustomButton

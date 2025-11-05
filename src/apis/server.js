@@ -2,9 +2,11 @@ export const baseUrl = `https://misbahjahann.bsite.net`;
 
 export const allCategory = async () => {
   try {
-    const responce = await fetch(`${baseUrl}/Categories`);
+    const responce = await fetch(`${baseUrl}/Categories/Index`);
+
     if (responce.ok) {
       var data = await responce.json();
+
       return await data;
     }
     console.error(responce.json());
@@ -31,7 +33,6 @@ export const productById = async (id) => {
     const responce = await fetch(`${baseUrl}/Products/Index/${id}`);
     if (responce.ok) {
       var data = await responce.json();
-      console.log(data);
       return data;
     }
     console.error(responce.json());
@@ -58,7 +59,6 @@ export const getAllOrders = async () => {
     const responce = await fetch(`${baseUrl}/Orders`);
     if (responce.ok) {
       var data = await responce.json();
-      console.log(data);
       return data;
     }
     console.error(responce.json());
@@ -69,10 +69,35 @@ export const getAllOrders = async () => {
 
 export const getOrdersDeatiles = async (id) => {
   try {
+    const responce = await fetch(`${baseUrl}/Orders/Index?UserId=${id}`);
+    if (responce.ok) {
+      var data = await responce.json();
+      return data;
+    }
+    console.error(responce.json());
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const orderProductsDetailes = async (id) => {
+  try {
     const responce = await fetch(`${baseUrl}/Orders/Details/${id}`);
     if (responce.ok) {
       var data = await responce.json();
+      return data;
+    }
+    console.error(responce.json());
+  } catch (error) {
+    console.error(error);
+  }
+};
 
+export const topFiveProducts = async () => {
+  try {
+    const responce = await fetch(`${baseUrl}/Products/GetTopFiveProducts`);
+    if (responce.ok) {
+      var data = await responce.json();
       return data;
     }
     console.error(responce.json());

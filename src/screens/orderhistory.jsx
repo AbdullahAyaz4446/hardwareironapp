@@ -1,90 +1,88 @@
-import React, { useEffect } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getAllOrders } from '../apis/server';
-
-const favoritesData = [
-  {
-    id: '1',
-    title: 'Order 1',
-
-    status: 'Delivered',
-    item: 2,
-    date: 'October 2021',
-  },
-  {
-    id: '2',
-    title: 'Order 2',
-
-    status: 'Delivered',
-    item: 3,
-    date: 'October 2021',
-  },
-  {
-    id: '3',
-    title: 'Order 3',
-
-    status: 'Cancelled',
-    item: 6,
-    date: 'November 2021',
-  },
-  {
-    id: '4',
-    title: 'Order 4',
-    status: 'Delivered',
-    item: 1,
-    date: 'November 2021',
-  },
-  {
-    id: '5',
-    title: 'Order 5',
-
-    status: 'Pending',
-    item: 4,
-    date: 'December 2021',
-  },
-];
+import { getOrdersDeatiles, orderProductsDetailes } from '../apis/server';
+import { useSelector } from 'react-redux';
 
 const OrderHistory = () => {
   const navigation = useNavigation();
+  const user = useSelector((state) => state.user.user);
+  const [orders, setOrders] = useState([]);
 
-  // useEffect(() => {
-  //   const data = getAllOrders();
-  // }, []);
+  const fetchOrdersDetails = async () => {
+    try {
+      const data = await getOrdersDeatiles(user.id);
+      setOrders(data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <View style={styles.cardContent}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text
-          style={[
-            styles.status,
-            {
-              color:
-                item.status === 'Delivered'
-                  ? 'green'
-                  : item.status === 'Cancelled'
-                  ? 'red'
-                  : '#54408C',
-            },
-          ]}
-        >
-          {item.status}
-        </Text>
-        <Text style={styles.itemCount}>Items: {item.item}</Text>
-        <Text style={styles.date}>Date: {item.date}</Text>
-      </View>
-    </View>
-  );
+  useEffect(() => {
+    fetchOrdersDetails();
+  }, []);
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 1:
+        return 'Pending';
+      case 2:
+        return 'Processing';
+      case 3:
+        return 'Delivered';
+      case 4:
+        return 'Cancelled';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  const renderItem = ({ item }) => {
+    const statusText = getStatusText(item.status);
+
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('OrderDetailes', {
+            id: item.id,
+          });
+        }}
+        style={styles.card}
+      >
+        <View style={styles.cardContent}>
+          <Text style={styles.title}>{`Order #${item.id}`}</Text>
+          <Text
+            style={[
+              styles.status,
+              {
+                color:
+                  statusText === 'Delivered'
+                    ? 'green'
+                    : statusText === 'Cancelled'
+                    ? 'red'
+                    : '#54408C',
+              },
+            ]}
+          >
+            {statusText}
+          </Text>
+
+          <Text style={styles.itemCount}>
+            Items: {item.productIds ? item.productIds.split(',').length : 0}
+          </Text>
+
+          <Text style={styles.date}>
+            Date: {new Date(item.createdAt).toLocaleDateString()}
+          </Text>
+
+          <Text style={styles.address}>Address: {item.address}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -97,12 +95,17 @@ const OrderHistory = () => {
       </View>
 
       <FlashList
-        data={favoritesData}
-        keyExtractor={(item) => item.id}
+        data={orders}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         estimatedItemSize={100}
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={{ alignItems: 'center', marginTop: 50 }}>
+            <Text style={{ color: '#999' }}>No orders found</Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );
@@ -140,12 +143,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  price: {
-    fontSize: 14,
-    color: '#54408C',
-    fontWeight: '600',
-    marginTop: 4,
-  },
   itemCount: {
     fontSize: 14,
     color: '#666',
@@ -154,6 +151,16 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 13,
     color: '#999',
+    marginTop: 2,
+  },
+  address: {
+    fontSize: 13,
+    color: '#555',
+    marginTop: 2,
+  },
+  user: {
+    fontSize: 13,
+    color: '#333',
     marginTop: 2,
   },
   status: {

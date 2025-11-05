@@ -24,7 +24,7 @@ import ProductDetailsSheet from '../components/activeSheet';
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
 import ScrollViewHorizontal from '../components/scrollbar-horixental';
-import { allCategory, baseUrl } from '../apis/server';
+import { allCategory, baseUrl, topFiveProducts } from '../apis/server';
 import { FlashList } from '@shopify/flash-list';
 import Category from './category';
 
@@ -34,40 +34,6 @@ const data = [
   { id: 1, image: require('../../assets/slider1.png') },
   { id: 2, image: require('../../assets/slider2.png') },
   { id: 3, image: require('../../assets/slider3.png') },
-];
-const initialImages = [
-  {
-    id: '1',
-    image: require('../../assets/slider1.png'),
-    name: 'The Kite Runner',
-    description:
-      'A heartbreaking story of friendship and redemption set in Afghanistan.',
-    price: '200.9$',
-  },
-  {
-    id: '2',
-    image: require('../../assets/slider1.png'),
-    name: 'Atomic Habits',
-    description:
-      'A guide to building good habits and breaking bad ones through small changes.',
-    price: '100.9$',
-  },
-  {
-    id: '3',
-    image: require('../../assets/slider1.png'),
-    name: 'Rich Dad Poor Dad',
-    description:
-      'Lessons on financial independence and mindset from two contrasting father figures.',
-    price: '20.1$',
-  },
-  {
-    id: '4',
-    image: require('../../assets/slider1.png'),
-    name: 'Ikigai',
-    description:
-      'The Japanese secret to a long and happy life through purpose and balance.',
-    price: '19.3$',
-  },
 ];
 
 const Home = () => {
@@ -81,12 +47,16 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const actionSheetRef = useRef(null);
+  const [top5Products, setTop5Products] = useState([]);
+
   const ref = useRef(null);
 
   const getAllCategories = async () => {
     const data = await allCategory();
-    console.log(data);
+    const topFive = await topFiveProducts();
     setPopularImages(data);
+    setTop5Products(topFive);
+    console.log('Top 5 products=========>', topFive);
   };
 
   useEffect(() => {
@@ -235,7 +205,7 @@ const Home = () => {
         <Text style={styles.sectionTitle}>Top 5 products of Week</Text>
 
         <ScrollViewHorizontal
-          data={searchText ? filteredProducts : initialImages}
+          data={top5Products}
           containerStyle={{ marginTop: 10 }}
           imageStyle={{ borderRadius: 15 }}
           titleStyle={{ color: 'black', fontWeight: 'bold' }}
