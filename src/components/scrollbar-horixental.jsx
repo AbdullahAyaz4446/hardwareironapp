@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { baseUrl } from '../apis/server';
+import Skeleton from 'react-native-reanimated-skeleton';
 
 const { width } = Dimensions.get('window');
 
@@ -27,29 +28,31 @@ const ScrollViewHorizontal = ({
       style={[styles.scrollContainer, containerStyle]}
     >
       {data.map((item, index) => (
-        <TouchableOpacity
-          key={item.id}
-          style={[styles.card, index === 0 && { marginLeft: 20 }]}
-          onPress={() => onPress?.(item)}
-        >
-          <Image
-            source={{ uri: baseUrl + '/' + item.image }}
-            style={[styles.image, imageStyle]}
-            resizeMode='cover'
-          />
+        <Skeleton isLoading={true}>
+          <TouchableOpacity
+            key={item.id}
+            style={[styles.card, index === 0 && { marginLeft: 20 }]}
+            onPress={() => onPress?.(item)}
+          >
+            <Image
+              source={{ uri: baseUrl + '/' + item.image }}
+              style={[styles.image, imageStyle]}
+              resizeMode='cover'
+            />
 
-          {item.name ? (
-            <Text style={[styles.title, titleStyle]} numberOfLines={1}>
-              {item.name}
-            </Text>
-          ) : null}
+            {item.name ? (
+              <Text style={[styles.title, titleStyle]} numberOfLines={1}>
+                {item.name}
+              </Text>
+            ) : null}
 
-          {item.price ? (
-            <Text style={[styles.price, priceStyle]} numberOfLines={1}>
-              {item.price}
-            </Text>
-          ) : null}
-        </TouchableOpacity>
+            {item.price ? (
+              <Text style={[styles.price, priceStyle]} numberOfLines={1}>
+                {item.price}
+              </Text>
+            ) : null}
+          </TouchableOpacity>
+        </Skeleton>
       ))}
     </ScrollView>
   );

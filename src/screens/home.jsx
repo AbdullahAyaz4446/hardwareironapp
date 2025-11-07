@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   Modal,
@@ -19,15 +20,18 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Carousel, { Pagination } from 'react-native-reanimated-carousel';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
 import ProductDetailsSheet from '../components/activeSheet';
 import CustomButton from '../components/button';
 import CustomTextInput from '../components/custom-text-input';
 import ScrollViewHorizontal from '../components/scrollbar-horixental';
 import { allCategory, baseUrl, topFiveProducts } from '../apis/server';
 import { FlashList } from '@shopify/flash-list';
-import Category from './category';
-
+import Skeleton from 'react-native-reanimated-skeleton';
 const { width } = Dimensions.get('window');
 
 const data = [
@@ -37,6 +41,7 @@ const data = [
 ];
 
 const Home = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const carouselRef = useRef(null);
   const progress = useSharedValue(0);
@@ -48,15 +53,20 @@ const Home = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const actionSheetRef = useRef(null);
   const [top5Products, setTop5Products] = useState([]);
-
-  const ref = useRef(null);
+  const [loading, setLoading] = useState(true); // 👈 New state for loader
 
   const getAllCategories = async () => {
-    const data = await allCategory();
-    const topFive = await topFiveProducts();
-    setPopularImages(data);
-    setTop5Products(topFive);
-    console.log('Top 5 products=========>', topFive);
+    try {
+      setLoading(true);
+      const data = await allCategory();
+      const topFive = await topFiveProducts();
+      setPopularImages(data);
+      setTop5Products(topFive);
+    } catch (err) {
+      console.log('Error fetching categories:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -95,6 +105,7 @@ const Home = () => {
       setRefreshing(false);
     }, 1500);
   };
+
   const openModal = (item) => {
     setSelectedProduct(item);
     actionSheetRef.current?.setModalVisible(true);
@@ -102,7 +113,10 @@ const Home = () => {
 
   const showList = ({ item }) => {
     return (
-      <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+      <Skeleton
+        isLoading={true}
+        style={{ justifyContent: 'space-between', flexDirection: 'row' }}
+      >
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('Products', { categoryId: item.id });
@@ -115,12 +129,23 @@ const Home = () => {
           />
           <Text style={styles.bookTitle}>{item.name}</Text>
         </TouchableOpacity>
-      </View>
+      </Skeleton>
     );
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      {loading && (
+        <BlurView
+          intensity={100}
+          tint='light'
+          style={[{ paddingTop: insets.top }, styles.blurContainer]}
+        >
+          <ActivityIndicator size='large' color='black' />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </BlurView>
+      )}
+
       <View style={styles.header}>
         <TouchableOpacity onPress={toggleSearch}>
           <Ionicons name='search' size={25} color='black' />
@@ -132,6 +157,7 @@ const Home = () => {
           <Ionicons name='ellipsis-horizontal' size={25} color='black' />
         </TouchableOpacity>
       </View>
+
       <ScrollView>
         <Animated.View
           style={[
@@ -173,9 +199,7 @@ const Home = () => {
                 <CustomButton
                   style={{ width: '55%', padding: 10, borderRadius: 20 }}
                   title='Order Now'
-                  onPress={() => {
-                    navigation.navigate('Products');
-                  }}
+                  onPress={() => navigation.navigate('Products')}
                 />
               </View>
               <View style={{ width: '60%' }}>
@@ -217,7 +241,9 @@ const Home = () => {
           ref={actionSheetRef}
           selectedProduct={selectedProduct}
         />
+
         <Text style={styles.sectionTitle}>Categorys</Text>
+
         <FlashList
           data={filteredCategories}
           numColumns={2}
@@ -240,25 +266,13 @@ const Home = () => {
             onPress={() => setModalVisible(false)}
           >
             <Pressable style={styles.dropdown} onPress={() => {}}>
-              <TouchableOpacity
-                onPress={() => {
-                  setModalVisible(false);
-                }}
-              >
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={styles.dropdownItem}>Messages</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setModalVisible(false);
-                }}
-              >
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={styles.dropdownItem}>Need Help?</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setModalVisible(false);
-                }}
-              >
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={styles.dropdownItem}>Feedback</Text>
               </TouchableOpacity>
             </Pressable>
@@ -272,6 +286,18 @@ const Home = () => {
 export default Home;
 
 const styles = StyleSheet.create({
+  blurContainer: {
+    zIndex: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...StyleSheet.absoluteFillObject,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: 'black',
+    fontSize: 16,
+    fontWeight: '500',
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -300,12 +326,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 20,
     paddingHorizontal: 20,
-  },
-  categoryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 20,
   },
   dropdown: {
     position: 'absolute',

@@ -6,7 +6,14 @@ import { FlashList } from '@shopify/flash-list';
 
 import { useEffect, useRef, useState } from 'react';
 
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 
 import Animated, {
   Easing,
@@ -37,10 +44,13 @@ const Products = ({ route }) => {
   const categoryId = route.params?.categoryId;
 
   const [searchText, setSearchText] = useState('');
+  6;
 
   const searchHeight = useSharedValue(0);
 
   const [tags, setTags] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleTagPress = (tag) => {
     if (tag.name === 'All') {
@@ -89,8 +99,15 @@ const Products = ({ route }) => {
   };
 
   const getAllProducts = async (id) => {
-    const data = await productById(id);
-    setProducts(data);
+    try {
+      setIsLoading(true);
+      const data = await productById(id);
+      setProducts(data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getAllCategories = async () => {
@@ -190,14 +207,21 @@ const Products = ({ route }) => {
         }}
       />
 
-      <FlashList
-        data={filteredProducts}
-        renderItem={renderProduct}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        estimatedItemSize={80}
-        contentContainerStyle={{ padding: 20 }}
-      />
+      {!isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size='large' color='black' />
+          <Text style={styles.loadingText}>Loading Products...</Text>
+        </View>
+      ) : (
+        <FlashList
+          data={filteredProducts}
+          renderItem={renderProduct}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          estimatedItemSize={80}
+          contentContainerStyle={{ padding: 20 }}
+        />
+      )}
 
       <ProductDetailsSheet
         ref={actionSheetRef}
@@ -264,5 +288,19 @@ const styles = StyleSheet.create({
     color: '#555',
 
     fontSize: 14,
+  },
+
+  loadingContainer: {
+    zIndex: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...StyleSheet.absoluteFillObject,
+  },
+
+  loadingText: {
+    marginTop: 15,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
   },
 });

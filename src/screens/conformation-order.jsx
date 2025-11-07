@@ -43,6 +43,7 @@ const ConformationOrder = () => {
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState(null);
   const [selectedDeliveryTime, setSelectedDeliveryTime] = useState(null);
   const cartItem = useSelector((state) => state.user.cart);
+  const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
   const totalPrice = cartItem.reduce(
     (sum, item) => sum + parseFloat(item.price) * (item.quantity || 1),
@@ -112,16 +113,27 @@ const ConformationOrder = () => {
   const shipping = 2;
   const finalTotal = (totalPrice + shipping).toFixed(2);
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     try {
-      // createOrder();
-      dispatch(resetCart());
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'OrderRecevingRating' }],
-      });
+      const address = 'jampur';
+      const userId = user.id;
+      const productList = cartItem.map((item) => item.id);
+
+      const paymentType = 1;
+
+      const response = await createOrder(
+        address,
+        userId,
+        productList,
+        paymentType
+      );
+      console.log('Order Response:', response);
+
+      // Optionally reset cart or navigate
+      // dispatch(resetCart());
+      // navigation.navigate('OrderRecevingRating');
     } catch (error) {
-      console.error(error);
+      console.error('Error placing order:', error);
     }
   };
 

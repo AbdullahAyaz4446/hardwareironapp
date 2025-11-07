@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import Animated, {
   Easing,
@@ -29,10 +30,18 @@ const Category = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [popularImages, setPopularImages] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const getAllCategories = async () => {
-    const data = await allCategory();
-    setPopularImages(data);
+    try {
+      setIsLoading(true);
+      const data = await allCategory();
+      setPopularImages(data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -116,13 +125,20 @@ const Category = () => {
         <CustomTextInput placeholder='Search...' onChangeText={setSearchText} />
       </Animated.View>
 
-      <FlashList
-        data={filteredCategories}
-        numColumns={2}
-        renderItem={showList}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-      />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size='large' color='#007AFF' />
+          <Text style={styles.loadingText}>Loading Categories...</Text>
+        </View>
+      ) : (
+        <FlashList
+          data={filteredCategories}
+          numColumns={2}
+          renderItem={showList}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -158,5 +174,16 @@ const styles = StyleSheet.create({
     color: '#54408C',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 15,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
   },
 });

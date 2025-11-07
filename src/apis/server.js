@@ -106,27 +106,55 @@ export const topFiveProducts = async () => {
   }
 };
 
-export const createOrder = async (order) => {
+export const createOrder = async (
+  address,
+  userId,
+  productList,
+  paymentType
+) => {
   try {
-    const responce = await fetch(`${baseUrl}/Order/Create`, {
-      method: 'POST',
-      header: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        productList: '1,2,3,4',
-        Address: 'DHA 2, Gate 2, Hira k ghar k paas.',
-        PaymentType: 1,
-      }),
-    });
-    if (responce.ok) {
-      const data = await response.json();
+    const myHeaders = new Headers();
 
+    myHeaders.append('Content-Type', 'application/json');
+
+    myHeaders.append(
+      'Cookie',
+      '.AspNetCore.Antiforgery.cmcxWzcMSs0=CfDJ8L0sHgPhnqtPosZOb7Ojw2rhHVDpwONEYbLRKKEBBPE37IlnJG_SNEIUXD5Aub8B3-ePSvBgJpQu8ajGGBcfsGTbsOUFhm1O6r34RZeMTibYmHgBxNLgMWztgyuVrTkkWc_pfCajjpLXrZzgwkGrVu8'
+    );
+
+    const raw = JSON.stringify({
+      Address: address,
+
+      PaymentType: paymentType,
+
+      UserId: userId,
+
+      productList: productList,
+    });
+
+    const requestOptions = {
+      method: 'POST',
+
+      headers: myHeaders,
+
+      body: raw,
+
+      redirect: 'follow',
+    };
+
+    const productQuery = productList.map((p) => `productList=${p}`).join('&');
+
+    const responce = await fetch(
+      `${baseUrl}/Orders/Create?Address=${address}&PaymentType=${paymentType}&UserId=${userId}&${productQuery}`,
+      requestOptions
+    );
+    if (responce.ok) {
+      var data = await responce;
       return data;
     }
     console.error(responce);
   } catch (error) {
-    console.error(error);
+    console.error('Error creating order:', error);
   }
 };
 
