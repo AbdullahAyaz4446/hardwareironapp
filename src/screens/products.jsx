@@ -202,12 +202,11 @@ const Products = ({ route }) => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
           alignItems: 'center',
-
           paddingHorizontal: 10,
         }}
       />
 
-      {!isLoading ? (
+      {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size='large' color='black' />
           <Text style={styles.loadingText}>Loading Products...</Text>

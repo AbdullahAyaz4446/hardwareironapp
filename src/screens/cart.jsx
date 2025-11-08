@@ -29,6 +29,7 @@ import jazzcash32 from '../../assets/jazzcash32.png';
 import jazzcash48 from '../../assets/jazzcash48.png';
 import jazzcash64 from '../../assets/jazzcash64.png';
 import jazzcash128 from '../../assets/jazzcash128.png';
+import Purchases from 'react-native-purchases';
 
 const Cart = () => {
   const navigation = useNavigation();
@@ -113,27 +114,59 @@ const Cart = () => {
   const shipping = 2;
   const finalTotal = (totalPrice + shipping).toFixed(2);
 
+  // const handlePlaceOrder = async () => {
+  //   try {
+  //     const address = 'jampur';
+  //     const userId = user.id;
+  //     const productList = cartItem.map((item) => item.id);
+
+  //     const paymentType = 1;
+  //     console.log(packages);
+
+  //     // const response = await createOrder(
+  //     //   address,
+  //     //   userId,
+  //     //   productList,
+  //     //   paymentType
+  //     // );
+  //     // console.log('Order Response:', response);
+
+  //     // Optionally reset cart or navigate
+  //     // dispatch(resetCart());
+  //     // navigation.navigate('OrderRecevingRating');
+  //   } catch (error) {
+  //     console.error('Error placing order:', error);
+  //   }
+  // };
+
   const handlePlaceOrder = async () => {
     try {
-      const address = 'jampur';
-      const userId = user.id;
-      const productList = cartItem.map((item) => item.id);
+      const offerings = await Purchases.getOfferings();
+      if (offerings.current && offerings.current.availablePackages.length > 0) {
+        const monthlyPackage = offerings.current.availablePackages.find(
+          (pkg) => pkg.identifier === '$rc_monthly'
+        );
 
-      const paymentType = 1;
+        if (!monthlyPackage) {
+          console.log('Monthly package not found');
+          return;
+        }
 
-      const response = await createOrder(
-        address,
-        userId,
-        productList,
-        paymentType
-      );
-      console.log('Order Response:', response);
+        const purchase = await Purchases.purchasePackage(monthlyPackage);
 
-      // Optionally reset cart or navigate
-      // dispatch(resetCart());
-      // navigation.navigate('OrderRecevingRating');
-    } catch (error) {
-      console.error('Error placing order:', error);
+        if (purchase.customerInfo.entitlements.active['premium']) {
+          console.log('Subscription purchased successfully!');
+
+          alert('Premium subscription activated!');
+        }
+      } else {
+        console.log('No offerings available');
+      }
+    } catch (e) {
+      if (!e.userCancelled) {
+        console.log('Error purchasing subscription:', e);
+        alert('Purchase failed. Please try again.');
+      }
     }
   };
 

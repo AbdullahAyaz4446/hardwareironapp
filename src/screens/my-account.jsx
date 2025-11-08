@@ -21,13 +21,12 @@ import { baseUrl } from '../apis/server';
 const MyAccount = () => {
   const navigation = useNavigation();
   const user = useSelector((state) => state.user.user);
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [profileImage, setProfileImage] = useState(
-    require('../../assets/accountImage.png')
-  );
+  // const [profileImage, setProfileImage] = useState(
+  //   require('../../assets/accountImage.png')
+  // );
 
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -39,7 +38,7 @@ const MyAccount = () => {
       setEmail(user.email || '');
       setPhone(user.phoneNumber || '');
       if (user.image && typeof user.image === 'string') {
-        setProfileImage({ uri: user.image });
+        // setProfileImage({ uri: user.image });
       }
     }
   }, [user]);
@@ -53,20 +52,18 @@ const MyAccount = () => {
     });
 
     if (!result.canceled) {
-      setProfileImage({ uri: result.assets[0].uri });
+      // setProfileImage({ uri: result.assets[0].uri });
     }
   };
 
   const handleSave = () => {
     let valid = true;
-
     if (!name.trim()) {
       setNameError('Full name is required');
       valid = false;
     } else {
       setNameError('');
     }
-
     if (!email.trim()) {
       setEmailError('Email is required');
       valid = false;
@@ -76,7 +73,6 @@ const MyAccount = () => {
     } else {
       setEmailError('');
     }
-
     const cleanedPhone = phone.replace(/\D/g, '');
     if (!cleanedPhone) {
       setPhoneError('Phone number is required');
@@ -87,13 +83,7 @@ const MyAccount = () => {
     } else {
       setPhoneError('');
     }
-
     if (!valid) return;
-
-    Alert.alert(
-      'Success',
-      'Your account details have been saved successfully!'
-    );
   };
 
   return (

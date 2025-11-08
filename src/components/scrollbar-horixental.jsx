@@ -20,6 +20,7 @@ const ScrollViewHorizontal = ({
   titleStyle,
   priceStyle,
   onPress,
+  loading = false,
 }) => {
   return (
     <ScrollView
@@ -28,9 +29,36 @@ const ScrollViewHorizontal = ({
       style={[styles.scrollContainer, containerStyle]}
     >
       {data.map((item, index) => (
-        <Skeleton isLoading={true}>
+        <Skeleton
+          key={item.id}
+          isLoading={loading}
+          animation='fade'
+          layout={[
+            {
+              key: 'image',
+              width: width / 3,
+              height: width / 2.5,
+              marginHorizontal: 10,
+            },
+            {
+              key: 'title',
+              width: 80,
+              height: 14,
+              marginTop: 8,
+              alignSelf: 'flex-start',
+              marginLeft: 10,
+            },
+            {
+              key: 'price',
+              width: 50,
+              height: 13,
+              marginTop: 4,
+              alignSelf: 'flex-start',
+              marginLeft: 10,
+            },
+          ]}
+        >
           <TouchableOpacity
-            key={item.id}
             style={[styles.card, index === 0 && { marginLeft: 20 }]}
             onPress={() => onPress?.(item)}
           >

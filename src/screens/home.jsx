@@ -31,9 +31,8 @@ import CustomTextInput from '../components/custom-text-input';
 import ScrollViewHorizontal from '../components/scrollbar-horixental';
 import { allCategory, baseUrl, topFiveProducts } from '../apis/server';
 import { FlashList } from '@shopify/flash-list';
-import Skeleton from 'react-native-reanimated-skeleton';
 const { width } = Dimensions.get('window');
-
+import Skeleton from 'react-native-reanimated-skeleton';
 const data = [
   { id: 1, image: require('../../assets/slider1.png') },
   { id: 2, image: require('../../assets/slider2.png') },
@@ -114,14 +113,35 @@ const Home = () => {
   const showList = ({ item }) => {
     return (
       <Skeleton
-        isLoading={true}
-        style={{ justifyContent: 'space-between', flexDirection: 'row' }}
+        key={item.id}
+        isLoading={loading}
+        animation='fade'
+        layout={[
+          {
+            key: 'image',
+            height: 180,
+            borderRadius: 10,
+            marginBottom: 10,
+            width: '95%',
+          },
+          {
+            key: 'title',
+            width: '40%',
+            height: 16,
+            borderRadius: 4,
+            marginBottom: 5,
+          },
+        ]}
+        containerStyle={{
+          flex: 1,
+          paddingTop: 10,
+        }}
       >
         <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Products', { categoryId: item.id });
-          }}
-          style={{ width: '90%', margin: 10 }}
+          onPress={() =>
+            navigation.navigate('Products', { categoryId: item.id })
+          }
+          style={styles.categoryCard}
         >
           <Image
             source={{ uri: baseUrl + '/' + item.image }}
@@ -230,6 +250,7 @@ const Home = () => {
 
         <ScrollViewHorizontal
           data={top5Products}
+          loading={loading}
           containerStyle={{ marginTop: 10 }}
           imageStyle={{ borderRadius: 15 }}
           titleStyle={{ color: 'black', fontWeight: 'bold' }}
@@ -251,7 +272,7 @@ const Home = () => {
           refreshing={refreshing}
           onRefresh={onRefresh}
           contentContainerStyle={{
-            paddingHorizontal: 20,
+            paddingHorizontal: 10,
           }}
         />
 
@@ -358,5 +379,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     color: '#000',
+  },
+  categoryCard: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 5,
   },
 });

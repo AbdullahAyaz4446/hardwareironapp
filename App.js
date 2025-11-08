@@ -14,9 +14,15 @@ import {
   getProductDeatilesById,
   productById,
 } from './src/apis/server';
+import Purchases from 'react-native-purchases';
 
 const App = () => {
-  // baseUrl.global = '';
+  async function configurePurchases() {
+    await Purchases.configure({
+      apiKey: 'test_zhWJEhYLOKZbwOfRJMqfgaFQJiC',
+    });
+  }
+
   useEffect(() => {
     GoogleSignin.configure({
       iosClientId:
@@ -24,6 +30,7 @@ const App = () => {
       webClientId:
         '231880254904-qv8nn82siarj5dr6sbaiftoglr79cbdd.apps.googleusercontent.com',
     });
+    configurePurchases();
   }, []);
 
   return (
